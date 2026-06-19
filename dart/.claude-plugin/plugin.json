@@ -1,0 +1,11 @@
+{
+  "name": "dart",
+  "description": "Dart code quality skills: clean code, static analysis, testing, optimization",
+  "version": "2.0.0",
+  "skills": [
+    "dart",
+    "analyze",
+    "test",
+    "optimization"
+  ]
+}
