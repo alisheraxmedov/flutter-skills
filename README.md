@@ -92,4 +92,4 @@ flutter-skills/
 
 ## License
 
-MIT
+[MIT](LICENSE)
