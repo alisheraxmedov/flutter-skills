@@ -1,0 +1,11 @@
+{
+  "name": "flutter",
+  "description": "Flutter development skills: architecture, static analysis, testing, performance optimization",
+  "version": "2.0.0",
+  "skills": [
+    "flutter",
+    "analyze",
+    "test",
+    "optimization"
+  ]
+}
