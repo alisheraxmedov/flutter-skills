@@ -33,6 +33,38 @@ Widget build(BuildContext context) {
 
 **Rule:** Run `flutter analyze` — `prefer_const_constructors` flags every missed opportunity.
 
+### const avoids per-build allocation; hoist for clarity
+
+A non-`const` constructor written inline in `build()` allocates a new object on every rebuild — `const` avoids that. Dart canonicalizes `const` expressions to one shared instance, so an inline `const` is already reused across builds. Promoting reused constants to `static const` class fields is therefore a readability / single-source win, not extra performance:
+
+```dart
+class _MyWidgetState extends State<MyWidget> {
+  static const _padding = EdgeInsets.all(16);
+  static const _gap = SizedBox(height: 8);
+
+  @override
+  Widget build(BuildContext context) => Padding(padding: _padding, child: ...);
+}
+```
+
+### Centralize repeated spacing as design tokens
+
+When the same spacing values repeat across screens, declaring them per-widget breaks consistency. Collect them in one place so they stay uniform and can be changed from a single source:
+
+```dart
+// app_spacing.dart
+abstract class AppSpacing {
+  static const xs = 4.0;
+  static const sm = 8.0;
+  static const md = 16.0;
+  static const lg = 24.0;
+}
+
+// usage
+const SizedBox(height: AppSpacing.sm);
+Padding(padding: const EdgeInsets.all(AppSpacing.md), child: ...);
+```
+
 ---
 
 ## 2. Surgical rebuilds — never setState at the top
