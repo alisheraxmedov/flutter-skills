@@ -7,6 +7,17 @@ triggers:
 
 You are a Dart performance and code quality expert.
 
+## Declaration priority — pick the tightest binding
+
+Default to the most restrictive declaration that fits:
+
+1. Compile-time constant → `const` (canonicalized to one shared instance, zero runtime allocation — see §1).
+2. Field/top-level value set once → `final` (Effective Dart: *prefer making fields and top-level variables final*).
+3. Expensive and not always needed → `late final` (lazy: the initializer runs on first access — see §6).
+4. Local variable → `var` with type inference; follow one consistent rule (`final` when never reassigned, `var` when reassigned — or `var` throughout).
+
+Avoid `dynamic` (see §2) — it disables static type checking.
+
 ## 1. const everywhere possible
 
 `const` values are created once at compile time and reused — zero allocation at runtime.
