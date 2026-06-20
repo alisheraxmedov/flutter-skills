@@ -59,6 +59,20 @@ Keep Riverpod providers exclusively in the Presentation layer. Never inject `ref
 - Break widgets larger than ~80 lines into sub-widgets (private `_ChildWidget` classes).
 - Use `Theme.of(context)` for colors and text styles. Never hardcode hex values.
 
+## Widget lifecycle (StatefulWidget)
+
+| Method | Runs | Use for |
+|---|---|---|
+| `initState` | Once, before the first build | Create controllers, open subscriptions, start the initial fetch. **Don't read InheritedWidgets here** (`Theme.of`, `MediaQuery.of`, `Provider.of`) — do that in `didChangeDependencies`. |
+| `didChangeDependencies` | Right after `initState`, and again whenever a depended-on `InheritedWidget` (`Theme`, `MediaQuery`, a `Provider`) changes | React to inherited data |
+| `build` | Every rebuild (potentially every frame) | Return UI only — no side effects |
+| `didUpdateWidget` | When the parent rebuilds this widget with new config (same `runtimeType` + `key`) | Sync to changed props by comparing against `oldWidget` |
+| `dispose` | Once, when the widget is permanently removed | Dispose/cancel everything opened in `initState` |
+
+**Rules:**
+- Every resource created in `initState` must be released in `dispose` — controllers, `StreamSubscription`s, timers. A missed `dispose` is a memory leak.
+- Call `super.initState()` first; call `super.dispose()` **last**. Never call `setState` in `dispose`. Guard `setState` after an `await` with `if (!mounted) return;`.
+
 ## Keys — use correctly
 
 | Key type | When |
