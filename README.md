@@ -18,8 +18,6 @@ Run these commands inside Claude Code:
 /plugin install flutter@flutter-dart-marketplace
 ```
 
-> Replace `alisheraxmedov/flutter-skills` with your own `owner/repo` if you host this elsewhere.
-
 Once installed, skills trigger **automatically** when relevant to your task, or you can invoke one explicitly with `/<plugin>:<skill>`.
 
 ## Dart plugin — `/dart:<skill>`
