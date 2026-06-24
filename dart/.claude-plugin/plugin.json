@@ -8,12 +8,5 @@
   },
   "license": "MIT",
   "keywords": ["dart", "dart3", "testing", "analysis", "freezed", "async"],
-  "skills": [
-    "dart",
-    "async",
-    "model",
-    "analyze",
-    "test",
-    "optimization"
-  ]
+  "skills": "./skills/"
 }

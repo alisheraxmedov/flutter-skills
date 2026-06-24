@@ -8,21 +8,5 @@
   },
   "license": "MIT",
   "keywords": ["flutter", "riverpod", "bloc", "go_router", "dio", "theming", "architecture", "testing", "performance", "code-review"],
-  "skills": [
-    "flutter",
-    "riverpod",
-    "bloc",
-    "navigation",
-    "networking",
-    "theming",
-    "error-handling",
-    "forms",
-    "animation",
-    "responsive",
-    "i18n",
-    "analyze",
-    "test",
-    "optimization",
-    "review"
-  ]
+  "skills": "./skills/"
 }
