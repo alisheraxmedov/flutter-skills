@@ -21,8 +21,7 @@ If a task touches an area below, you **must** invoke the matching skill before c
 
 | Task touches | Invoke |
 |---|---|
-| App/feature state, providers, notifiers (Riverpod project) | `flutter:riverpod` |
-| App/feature state, Cubit/Bloc, events (Bloc project) | `flutter:bloc` |
+| App/feature/shared state — Riverpod or Bloc/Cubit, providers, notifiers, events, "UI won't update" | `flutter:state-management` |
 | Routing, deep links, tabs, redirects | `flutter:navigation` |
 | HTTP/REST/API, dio, interceptors | `flutter:networking` |
 | Colors, theme, dark mode, typography | `flutter:theming` |
@@ -54,7 +53,7 @@ Read the project and match its conventions — don't introduce a parallel setup:
 
 ## MVVM rules
 - Each View has exactly **one** ViewModel (1:1). View renders state + forwards intents; **no** business logic, HTTP, or parsing in widgets.
-- ViewModels invoke use cases and expose state/Commands. Reactive mechanics live in the `flutter:riverpod`/`flutter:bloc` skills.
+- ViewModels invoke use cases and expose state/Commands. Reactive mechanics live in the `flutter:state-management` skill.
 - Errors cross layers as `Result<T>`, not exceptions (see `flutter:error-handling`).
 
 ## File placement (SRP: one public class per file, file name = `snake_case` of class)
@@ -89,7 +88,7 @@ lib/
 ## Common mistakes
 - **Logic / API calls / heavy computation in `build()`** → move to a ViewModel/Notifier/repository; `build` only describes UI.
 - **Giant deeply-nested widget trees** → extract `const` StatelessWidget components, one per responsibility.
-- **Driving a large app with `setState` alone** → choose a real state solution (`flutter:riverpod` / `flutter:bloc`).
+- **Driving a large app with `setState` alone** → choose a real state solution (`flutter:state-management`).
 - **Hardcoded URLs / API keys / secrets / config literals** → use an `Env`/config layer + `--dart-define`; never commit secrets.
 - **God class doing UI + business + data** → split into View / ViewModel / Repository / Service (one responsibility each).
 - **Widgets `new`-ing concrete services** → depend on repository *interfaces* injected via DI.

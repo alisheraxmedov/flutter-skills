@@ -48,7 +48,7 @@ it just wrote — the second pair of eyes catches what the author rationalized a
 - **Be specific and fair.** Every finding cites a location and a concrete fix;
   don't flag style as Blocking, and don't approve over a real crash/leak/secret.
 - **Cite, don't re-teach.** Point to the owning skill's
-  `reference/anti-patterns.md` (`flutter:optimization`, `flutter:riverpod`,
+  `reference/anti-patterns.md` (`flutter:optimization`, `flutter:state-management`,
   `flutter:analyze`, `flutter:error-handling`, `dart:dart`) instead of pasting
   long explanations.
 

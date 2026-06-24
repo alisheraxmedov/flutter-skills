@@ -58,10 +58,10 @@ higher one and say why in one line.
 >
 > **Blocking**
 > - `lib/features/auth/login_view_model.dart:34` — **secret hardcoded**: `apiKey = 'sk_live_...'` in source. Move to `--dart-define` / `Env.apiKey`; rotate the leaked key. (see `flutter:flutter`)
-> - `lib/features/cart/cart_notifier.dart:52` — **state→UI won't update**: `state.items.add(item)` mutates and reuses the same list. Emit a new list: `state = state.copyWith(items: [...state.items, item]);` (see `flutter:riverpod`)
+> - `lib/features/cart/cart_notifier.dart:52` — **state→UI won't update**: `state.items.add(item)` mutates and reuses the same list. Emit a new list: `state = state.copyWith(items: [...state.items, item]);` (see `flutter:state-management`)
 >
 > **Should-fix**
-> - `lib/features/cart/cart_view.dart:18` — **logic in `build()`**: `repo.fetchTotals()` called inside `build`, refires every rebuild. Move to a `FutureProvider`/`AsyncNotifier`. (see `flutter:riverpod`)
+> - `lib/features/cart/cart_view.dart:18` — **logic in `build()`**: `repo.fetchTotals()` called inside `build`, refires every rebuild. Move to a `FutureProvider`/`AsyncNotifier`. (see `flutter:state-management`)
 >
 > **Nit**
 > - `lib/features/cart/cart_view.dart:40` — **magic number** `72`; name it `kRowHeight` and pass as `itemExtent`.

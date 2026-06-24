@@ -130,7 +130,7 @@ Wire concrete implementations to interfaces at the composition root (`bootstrap.
 | Option | When | Notes |
 |--------|------|-------|
 | `provider` | Official recommendation; simple apps | `ChangeNotifierProvider`, `Provider`, `context.read/watch` |
-| `riverpod` | Compile-safe DI + state; most modern apps | Providers double as the DI graph; see **riverpod** skill |
+| `riverpod` | Compile-safe DI + state; most modern apps | Providers double as the DI graph; see `flutter:state-management` |
 | `get_it` (+ `injectable`) | Service-locator style, large apps | Decouples DI from the widget tree |
 
 ```dart

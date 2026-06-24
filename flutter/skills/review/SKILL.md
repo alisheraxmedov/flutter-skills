@@ -45,7 +45,7 @@ Walk every theme in `reference/checklist.md`. Headline items:
 
 Each domain's deep do/avoid detail lives in that specialist skill's own anti-patterns reference — invoke that skill and cite it, don't restate it:
 - rebuilds, `const`, lists, leaks/disposal → `flutter:optimization`
-- state→UI, `ref.watch`/`read`, new instance/collection → `flutter:riverpod` (or `flutter:bloc`)
+- state→UI, `ref.watch`/`read`, new instance/collection → `flutter:state-management`
 - `BuildContext` async gaps, dead code, lints → `flutter:analyze`
 - swallowed errors, `Result`/`Failure`, boundaries → `flutter:error-handling`
 - `!`/`late`/`dynamic`, DRY, god class, magic numbers → `dart:dart`

@@ -29,7 +29,7 @@ documented anti-patterns; the deep do/avoid for each lives in the named skill's
 - [ ] Errors cross layers as `Result`/`Failure` (or are surfaced), not lost or rethrown as raw `Exception`?
 - [ ] In a `Notifier`/`AsyncNotifier`, mutations are wrapped in `AsyncValue.guard` (or equivalent) so errors land in state?
 
-### State → UI updates (the #1 bug — `flutter:riverpod` / `flutter:bloc`)
+### State → UI updates (the #1 bug — `flutter:state-management`)
 - [ ] State change emits/assigns a **new immutable instance** (`copyWith`/new state), never mutates `state.field` in place?
 - [ ] Collections rebuilt as a **new** list/map/set (`[...old, x]`), never `.add`/`.remove` on the reused reference?
 - [ ] Equatable/freezed `props` cover **all** fields (no field silently excluded from equality)?
@@ -71,7 +71,7 @@ documented anti-patterns; the deep do/avoid for each lives in the named skill's
 ### Return-widget-from-method (#13 — `flutter:optimization`)
 - [ ] UI extracted into real `const StatelessWidget`s, not `Widget _buildHeader()` helper methods?
 
-### `FutureBuilder` misuse (— `flutter:riverpod`)
+### `FutureBuilder` misuse (— `flutter:state-management`)
 - [ ] No `FutureBuilder(future: repo.fetch())` created in `build` (refires every rebuild) — uses a provider / cached future / `AsyncNotifier`?
 
 ## Structure & maintainability — Should-fix / Nit

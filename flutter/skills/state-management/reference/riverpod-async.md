@@ -1,4 +1,4 @@
-# AsyncNotifier — load + mutate a list
+# Riverpod AsyncNotifier — load + mutate a list
 
 `AsyncNotifier` is for async state you also mutate. `build` returns the initial `Future<T>`; mutations reassign `state` (an `AsyncValue<T>`).
 
