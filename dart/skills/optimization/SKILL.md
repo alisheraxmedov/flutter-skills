@@ -1,148 +1,63 @@
 ---
 name: optimization
-description: Optimizes Dart code — const, type safety, pattern matching, avoiding dynamic, records
-triggers:
-  - /dart:optimization
+description: Optimize Dart performance and memory through const, tight typing, allocation reduction, lazy iterables, and leak prevention when tuning or reviewing hot code.
 ---
 
-You are a Dart performance and code quality expert.
+You are a Dart performance and memory expert who writes fast, allocation-aware code.
 
-## Declaration priority — pick the tightest binding
+## When to use
+- Tuning hot paths, tight loops, large collections, or `build` methods.
+- Diagnosing memory growth, leaks, or GC pressure.
 
-Default to the most restrictive declaration that fits:
+## Declaration priority
+Pick the tightest binding that fits — **never `dynamic`**.
 
-1. Compile-time constant → `const` (canonicalized to one shared instance, zero runtime allocation — see §1).
-2. Field/top-level value set once → `final` (Effective Dart: *prefer making fields and top-level variables final*).
-3. Expensive and not always needed → `late final` (lazy: the initializer runs on first access — see §6).
-4. Local variable → `var` with type inference; follow one consistent rule (`final` when never reassigned, `var` when reassigned — or `var` throughout).
+| Priority | Binding | Why |
+| --- | --- | --- |
+| 1 | `const` | Compile-time, canonicalized, **zero runtime allocation** |
+| 2 | `final` | Set once; no accidental reassignment |
+| 3 | `var` | Local that is actually reassigned |
 
-Avoid `dynamic` (see §2) — it disables static type checking.
+Avoid `dynamic` — it disables static checking and dispatches slowly.
 
-## 1. const everywhere possible
+## GC & memory
+Dart uses a **generational, mark-and-sweep GC** — you can't free memory manually. Optimize by **reducing allocations**, not freeing.
+- **Prefer `const`**: const values are canonicalized — built once, zero allocation.
+- **Don't allocate in tight loops or `build`**: hoist invariants (regexes, buffers, constants) out.
+- **Reuse objects** instead of recreating identical ones each iteration/frame.
+- **`StringBuffer`** for accumulation — each `+` on a `String` allocates (O(n²) in a loop).
+- **Lazy `Iterable`**: `map`/`where`/`expand` are lazy; don't `.toList()` mid-chain — materialize once at the end (or not at all).
 
-`const` values are created once at compile time and reused — zero allocation at runtime.
+## Leaks the GC can't collect
+The GC can't reclaim objects still referenced. Always dispose:
+- **StreamSubscriptions** → `cancel()`; **StreamControllers/sinks** → `close()`.
+- **Timers** → `cancel()`; **listeners/ChangeNotifiers** → `removeListener`/`dispose`.
+- **Retained global/static state** holding large objects → null out or scope it.
 
-```dart
-// Wrong
-final padding = EdgeInsets.all(16);
-final colors = [Colors.red, Colors.blue];
-
-// Correct
-const padding = EdgeInsets.all(16);
-const colors = [Colors.red, Colors.blue];
-```
-
-## 2. Avoid `dynamic`
-
-`dynamic` disables type checking and enables slower runtime dispatch. Always declare explicit types.
-
-```dart
-// Wrong
-dynamic parseResponse(dynamic json) => json['data'];
-
-// Correct
-List<UserModel> parseResponse(Map<String, dynamic> json) {
-  return (json['data'] as List).map((e) => UserModel.fromJson(e as Map<String, dynamic>)).toList();
-}
-```
-
-## 3. Switch expressions over if-else chains
-
-Switch expressions are compiled to jump tables — faster than if-else chains, and exhaustive.
+Profile with **DevTools memory** view and GC events to confirm.
 
 ```dart
-// Wrong — slow if-else chain, no exhaustiveness check
-String label;
-if (status == Status.active) {
-  label = 'Active';
-} else if (status == Status.inactive) {
-  label = 'Inactive';
-} else {
-  label = 'Unknown';
-}
-
-// Correct
-final label = switch (status) {
-  Status.active   => 'Active',
-  Status.inactive => 'Inactive',
-  Status.pending  => 'Pending',
-};
+// Avoid: new RegExp every iteration
+for (final s in lines) { if (RegExp(r'\d+').hasMatch(s)) count++; }
+// Prefer: build once, hoist the invariant
+final digits = RegExp(r'\d+');
+for (final s in lines) { if (digits.hasMatch(s)) count++; }
 ```
 
-## 4. Pattern matching for type checks (no manual casting)
+## Common mistakes
+- `dynamic`/loose typing in hot code → precise static types: it restores type checks, avoids boxing, and enables faster dispatch.
 
-```dart
-// Wrong
-if (result is Success) {
-  final data = (result as Success).data; // double type check
-}
+## Output contract
+When this skill is active, keep responses tight and scannable:
+- Lead with the fix or answer — no preamble, no restating the request.
+- Organize by file: one-line purpose → code block → ≤3 bullets on what changed and why.
+- Code first, prose second. Explain only what isn't obvious from the code.
+- Short bullets, not paragraphs (each ≤2 lines); **bold** the key term.
+- End with a **Check:** list of 2-5 concrete things to verify (compiles, analyzer clean, tests pass).
+- Don't pad length or echo the user's unchanged code back.
 
-// Correct — single destructuring
-if (result case Success(data: final data)) {
-  // use data directly
-}
-```
-
-## 5. Records instead of throwaway classes
-
-For internal-use-only multiple return values, records avoid class boilerplate:
-
-```dart
-// Before: required a separate class
-class ParseResult { final String name; final int age; ... }
-
-// After: record
-(String name, int age) parseHeader(String raw) {
-  final parts = raw.split(',');
-  return (parts[0].trim(), int.parse(parts[1].trim()));
-}
-
-final (name, age) = parseHeader(raw);
-```
-
-Do NOT use records as public API types — use named classes for anything crossing module boundaries.
-
-## 6. late: only for lazy initialization
-
-```dart
-// Correct — expensive object created only when first accessed
-late final _cache = HashMap<String, UserModel>();
-
-// Wrong — async-dependent field; will throw LateInitializationError
-late UserModel _user;
-Future<void> init() async {
-  _user = await fetchUser(); // crash if _user accessed before init completes
-}
-```
-
-## 7. String building
-
-For many concatenations inside a loop, use `StringBuffer` — each `+` on a String allocates a new object.
-
-```dart
-// Wrong — O(n²) allocations
-String result = '';
-for (final item in items) {
-  result += item.name + ', ';
-}
-
-// Correct
-final buffer = StringBuffer();
-for (final item in items) {
-  buffer.write(item.name);
-  buffer.write(', ');
-}
-final result = buffer.toString();
-```
-
-## 8. Collection literals over constructors
-
-```dart
-// Wrong
-final list = List<String>.from(other);
-final map = Map<String, int>.from(other);
-
-// Correct
-final list = [...other];
-final map = {...other};
-```
+## Deep reference
+- How generational GC works, allocation-reduction tactics, leak sources + fixes: read `reference/gc-and-memory.md`.
+- Lazy iterables, fixed vs growable lists, const collections, `Iterable` methods: read `reference/collections-and-iterables.md`.
+- Before/after benchmarks: StringBuffer, switch expressions, pattern matching, isolates: read `reference/benchmarks.md`.
+- Anti-patterns with do/avoid examples (`dynamic`/loose typing as a perf cost): read `reference/anti-patterns.md`.

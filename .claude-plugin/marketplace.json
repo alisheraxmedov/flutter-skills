@@ -1,16 +1,19 @@
 {
   "name": "flutter-dart-marketplace",
   "description": "Flutter va Dart uchun professional kod yozish skilllar to'plami",
-  "owner": "alisherakhmedov",
+  "owner": {
+    "name": "alisherakhmedov",
+    "email": "alisheraxmedov4x4@gmail.com"
+  },
   "plugins": [
     {
       "name": "dart",
-      "description": "Dart kodi yozish uchun skilllar: model, test, analyze, enum",
+      "description": "Dart code-quality skills: idiomatic Dart 3, async/streams/isolates, data models (freezed), static analysis, testing, optimization",
       "source": "./dart"
     },
     {
       "name": "flutter",
-      "description": "Flutter UI va arxitektura uchun skilllar: widget, screen, animation, responsive, riverpod",
+      "description": "Flutter skills: Clean Architecture, Riverpod & BLoC, go_router navigation, dio networking, forms, animation, responsive, i18n, testing, performance",
       "source": "./flutter"
     }
   ]

@@ -1,9 +1,17 @@
 {
   "name": "dart",
-  "description": "Dart code quality skills: clean code, static analysis, testing, optimization",
-  "version": "2.0.0",
+  "description": "Dart code-quality skills: idiomatic Dart 3, async/streams/isolates, data models, static analysis, testing, optimization",
+  "version": "3.0.0",
+  "author": {
+    "name": "alisherakhmedov",
+    "email": "alisher.summertech.ai@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": ["dart", "dart3", "testing", "analysis", "freezed", "async"],
   "skills": [
     "dart",
+    "async",
+    "model",
     "analyze",
     "test",
     "optimization"

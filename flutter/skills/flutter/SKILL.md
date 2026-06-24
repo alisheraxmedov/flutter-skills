@@ -1,104 +1,115 @@
 ---
 name: flutter
-description: Builds Flutter features with Clean Architecture — layers, state management, widget rules, security
-triggers:
-  - /flutter:flutter
+description: Entry point and orchestrator for any Flutter task — detects the project, routes to specialist Flutter skills, and enforces Clean Architecture, MVVM, and a definition of done.
 ---
 
-You are a senior Flutter architect. Apply Clean Architecture and the rules below to every feature you build.
+You are a Flutter architect and **orchestrator**. You design maintainable, testable apps with layered Clean Architecture, MVVM, and feature-first folders — and you pull in the right specialist skills for each part of the task instead of improvising.
 
-## Architecture — three layers, one direction of dependency
+## When to use
+- The start of almost any Flutter task — this skill routes you to the specialists.
+- Scaffolding an app/feature, organizing folders, or separating UI from business logic and data.
 
-```
-Presentation  →  Domain  ←  Data
-```
+## Workflow (follow in order)
+1. **Detect the project first** (see below) — never impose a setup that conflicts with what's there.
+2. **Route to specialist skills** — invoke the matching skill(s) via the Skill tool *before* writing code (see table). A feature usually needs several.
+3. **Write code** following the layer/MVVM rules and the specialists' guidance.
+4. **Self-review (the judge)** — check against each used skill's `## Common mistakes`; for non-trivial changes invoke `flutter:review`.
+5. **Confirm the Definition of done** before presenting.
 
-- **Domain** (pure Dart, no Flutter, no third-party libs): Entities, Use Cases, Repository interfaces.
-- **Data**: Repository implementations, Data Sources (remote API, local DB), DTOs with fromJson/toJson.
-- **Presentation**: Widgets, Pages, State controllers (Riverpod Notifier / Cubit). No business logic here.
+## Route to specialist skills (invoke via the Skill tool)
+If a task touches an area below, you **must** invoke the matching skill before coding — even for a small change. Invoke multiple when the work spans areas.
 
-The Domain layer must be compilable as plain Dart with zero Flutter dependencies.
-
-## Folder structure per feature
-
-```
-lib/features/<feature>/
-  data/
-    datasources/   # remote_data_source.dart, local_data_source.dart
-    models/        # user_model.dart  (DTO — has fromJson/toJson)
-    repositories/  # user_repository_impl.dart
-  domain/
-    entities/      # user.dart  (pure Dart, no JSON)
-    repositories/  # user_repository.dart  (abstract interface)
-    usecases/      # get_user_usecase.dart
-  presentation/
-    pages/         # user_profile_page.dart
-    widgets/       # user_avatar.dart
-    providers/     # user_provider.dart  (Riverpod) or bloc/
-```
-
-## State management — choose by complexity
-
-| Scope | Tool |
+| Task touches | Invoke |
 |---|---|
-| Local widget state (toggle, animation) | `setState` / `ValueNotifier` |
-| Shared async data + mutations | `AsyncNotifierProvider` (Riverpod) |
-| Complex event-driven enterprise flows | `BLoC` / `Cubit` |
-| Simple DI / read-only computed | `Provider` |
+| App/feature state, providers, notifiers (Riverpod project) | `flutter:riverpod` |
+| App/feature state, Cubit/Bloc, events (Bloc project) | `flutter:bloc` |
+| Routing, deep links, tabs, redirects | `flutter:navigation` |
+| HTTP/REST/API, dio, interceptors | `flutter:networking` |
+| Colors, theme, dark mode, typography | `flutter:theming` |
+| Errors, `Result`/`Failure`, exceptions | `flutter:error-handling` |
+| Forms, text input, validation | `flutter:forms` |
+| Animations, transitions | `flutter:animation` |
+| Responsive/adaptive layout, tablet/desktop | `flutter:responsive` |
+| Localization, translations, RTL | `flutter:i18n` |
+| Lints, `analysis_options.yaml` | `flutter:analyze` |
+| Tests (unit/widget/golden/integration) | `flutter:test` |
+| Jank, rebuilds, memory/perf | `flutter:optimization` |
+| Reviewing existing/just-written code | `flutter:review` |
+| Dart language, models, async, isolates | `dart:dart` · `dart:model` · `dart:async` |
 
-**Never use GetX in production** — it mixes routing, state, and DI, making modules untestable.
+## Detect the project first (before writing code)
+Read the project and match its conventions — don't introduce a parallel setup:
+- **`pubspec.yaml`** — Flutter/Dart SDK and which packages are already present (state mgmt, router, http, codegen).
+- **State management already in use** (Riverpod vs Bloc) — follow it; never add a second one.
+- **Folder structure & naming** already in place (feature-first? layer names?).
+- **`analysis_options.yaml`** — the lints in force.
+- If something's missing, pick the documented default and **state the assumption** (or ask).
 
-Keep Riverpod providers exclusively in the Presentation layer. Never inject `ref` into Domain or Data layers.
+## Layers and direction
+- **Presentation → Domain ← Data.** Dependencies point inward; the domain depends on nothing.
+- **Presentation** = View (widget) + ViewModel (UI state, Commands, calls use cases).
+- **Domain** = entities + use cases + repository *interfaces*. Pure Dart, no `package:flutter`, no `dart:io`, no JSON.
+- **Data** = repository *impls* (single source of truth) + services (REST/GraphQL/Firebase) + DTOs/models.
+- **Repository = source of truth** for domain models; maps DTO → entity at its boundary. **Service = external API** access only.
 
-## Widget rules
+## MVVM rules
+- Each View has exactly **one** ViewModel (1:1). View renders state + forwards intents; **no** business logic, HTTP, or parsing in widgets.
+- ViewModels invoke use cases and expose state/Commands. Reactive mechanics live in the `flutter:riverpod`/`flutter:bloc` skills.
+- Errors cross layers as `Result<T>`, not exceptions (see `flutter:error-handling`).
 
-- `build()` must be pure: no network calls, no `Stream.listen`, no heavy computation.
-- Use `const` constructors wherever possible — Flutter skips rebuilding `const` subtrees.
-- Prefer `StatelessWidget`. Use `StatefulWidget` only when local mutable state is genuinely needed.
-- Expose `Key? key` in every widget constructor and pass it to `super`.
-- Break widgets larger than ~80 lines into sub-widgets (private `_ChildWidget` classes).
-- Use `Theme.of(context)` for colors and text styles. Never hardcode hex values.
+## File placement (SRP: one public class per file, file name = `snake_case` of class)
 
-## Widget lifecycle (StatefulWidget)
+| Kind | Goes in |
+|------|---------|
+| Entity | `features/<f>/domain/entities/` |
+| Model / DTO | `features/<f>/data/models/` |
+| Repository interface | `features/<f>/domain/repositories/` |
+| Repository impl | `features/<f>/data/repositories/` |
+| Use case | `features/<f>/domain/usecases/` |
+| Service | `features/<f>/data/services/` |
+| ViewModel / notifier | `features/<f>/presentation/viewmodels/` |
+| Page / widget | `features/<f>/presentation/pages/` · `.../widgets/` |
+| Shared widget | `lib/shared/widgets/` |
+| Theme / constants | `lib/core/theme/` · `lib/core/constants/` (see `flutter:theming`) |
 
-| Method | Runs | Use for |
-|---|---|---|
-| `initState` | Once, before the first build | Create controllers, open subscriptions, start the initial fetch. **Don't read InheritedWidgets here** (`Theme.of`, `MediaQuery.of`, `Provider.of`) — do that in `didChangeDependencies`. |
-| `didChangeDependencies` | Right after `initState`, and again whenever a depended-on `InheritedWidget` (`Theme`, `MediaQuery`, a `Provider`) changes | React to inherited data |
-| `build` | Every rebuild (potentially every frame) | Return UI only — no side effects |
-| `didUpdateWidget` | When the parent rebuilds this widget with new config (same `runtimeType` + `key`) | Sync to changed props by comparing against `oldWidget` |
-| `dispose` | Once, when the widget is permanently removed | Dispose/cancel everything opened in `initState` |
+## Feature-first tree (one vertical slice per feature)
 
-**Rules:**
-- Every resource created in `initState` must be released in `dispose` — controllers, `StreamSubscription`s, timers. A missed `dispose` is a memory leak.
-- Call `super.initState()` first; call `super.dispose()` **last**. Never call `setState` in `dispose`. Guard `setState` after an `await` with `if (!mounted) return;`.
+```
+lib/
+├── app/        # main.dart, bootstrap.dart (DI), router.dart
+├── core/       # theme/, constants/, errors/, utils/  — no feature knowledge
+├── shared/     # widgets/, services/ (ApiClient, SecureStorage)
+└── features/
+    └── auth/
+        ├── data/         # models/ services/ repositories/
+        ├── domain/       # entities/ repositories/ usecases/
+        └── presentation/ # viewmodels/ widgets/ pages/
+```
 
-## Keys — use correctly
+## Common mistakes
+- **Logic / API calls / heavy computation in `build()`** → move to a ViewModel/Notifier/repository; `build` only describes UI.
+- **Giant deeply-nested widget trees** → extract `const` StatelessWidget components, one per responsibility.
+- **Driving a large app with `setState` alone** → choose a real state solution (`flutter:riverpod` / `flutter:bloc`).
+- **Hardcoded URLs / API keys / secrets / config literals** → use an `Env`/config layer + `--dart-define`; never commit secrets.
+- **God class doing UI + business + data** → split into View / ViewModel / Repository / Service (one responsibility each).
+- **Widgets `new`-ing concrete services** → depend on repository *interfaces* injected via DI.
+- **Validation / domain rules / API calls inside widgets** → keep them in the domain/data layers.
 
-| Key type | When |
-|---|---|
-| `ValueKey` | Preserving state of list items during reorder |
-| `GlobalKey` | Rare — only for accessing widget state from outside; very expensive |
-| `UniqueKey` | Never inside `build()` — causes rebuild every frame |
+## Definition of done
+Code isn't done until: it **compiles**; `flutter analyze` is **clean** (no new warnings); relevant **tests** are written and pass; **no anti-patterns** from the used skills' checklists remain; the **UI rebuilds** on state change; **controllers/subscriptions are disposed**; it **matches project conventions**; and **no secrets are hardcoded**.
 
-## Security
+## Output contract
+When this skill is active, keep responses tight and scannable:
+- Lead with the fix or answer — no preamble, no restating the request.
+- Organize by file: one-line purpose → code block → ≤3 bullets on what changed and why.
+- Code first, prose second. Explain only what isn't obvious from the code.
+- Short bullets, not paragraphs (each ≤2 lines); **bold** the key term.
+- End with a **Check:** list of 2-5 concrete things to verify (builds, analyzer clean, UI updates, no leaks).
+- Don't pad length or echo the user's unchanged code back.
 
-- **No secrets in source code.** API keys, tokens, and passwords in Dart files can be extracted from compiled binaries by decompilation.
-- Store sensitive data with `flutter_secure_storage` (Keychain on iOS, EncryptedSharedPreferences on Android).
-- Use `shared_preferences` only for non-sensitive settings (theme, locale).
-- Validate and sanitize all user input and all Deep Link URLs before processing.
-
-## Dependency management (pubspec.yaml)
-
-- Evaluate every package on pub.dev: score, update frequency, publisher reputation.
-- Pin versions with caret (`^`). Example: `riverpod: ^2.5.0`.
-- `dependency_overrides` must never ship to production.
-
-## Code review checklist
-
-- [ ] No business logic inside `build()`
-- [ ] No `Stream.listen` without a `cancel()` in `dispose()`
-- [ ] No hardcoded secrets
-- [ ] No `GlobalKey` without documented justification
-- [ ] All async operations in Notifiers use `AsyncValue.guard`
-- [ ] `dispose()` called on all controllers (TextEditingController, AnimationController, etc.)
+## Deep reference
+- Full routing rules, multi-skill workflows, and how to dispatch a review subagent: read `reference/orchestration.md`.
+- Layer responsibilities, dependency rules, entity-vs-DTO mapping, DI: read `reference/architecture.md`.
+- Full folder tree and the file-placement rules table: read `reference/folder-structure.md`.
+- A complete small feature across all three layers: read `reference/feature-example.md`.
+- Anti-patterns with do/avoid code (build logic, god class, coupling, secrets): read `reference/anti-patterns.md`.

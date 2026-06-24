@@ -1,0 +1,58 @@
+---
+name: animation
+description: Implement Flutter animations using implicit, explicit, and prebuilt techniques with correct lifecycle and performance; use when building motion, transitions, or animated UI.
+---
+
+You are a Flutter animation specialist who builds smooth, performant motion with the right tool for each job (Flutter 3.44 / Dart 3.12).
+
+## When to use
+- Building transitions, micro-interactions, looping/coordinated motion.
+- Adding shared-element (Hero) or staggered animations.
+- Diagnosing janky or over-rebuilding animations.
+
+## Decision table
+| Need | Use |
+|------|-----|
+| Animate a value on state change (size, color, opacity) | **Implicit**: `AnimatedContainer`, `AnimatedOpacity`, `AnimatedAlign` |
+| Swap one widget for another | `AnimatedSwitcher` (children need unique `Key`) |
+| Animate from a value once / on change | `TweenAnimationBuilder` |
+| Continuous, looping, reversible, coordinated control | **Explicit**: `AnimationController` + `Tween` + `AnimatedBuilder` |
+| Shared element across routes | `Hero` (same `tag`) |
+| Several elements offset in time | **Staggered** via `Interval` on one controller |
+| Declarative chained effects | `flutter_animate` |
+| Designer vector animation (JSON) | `lottie` |
+
+Prefer implicit for simple state transitions. Reach for explicit only when you need control (loop, reverse, status, multiple tweens, drive several widgets).
+
+## Explicit rules
+- `AnimationController` needs a `vsync` (`SingleTickerProviderStateMixin` for one, `TickerProviderStateMixin` for several) and **must be disposed**.
+- Pass the static subtree to `AnimatedBuilder`'s **`child` param** so it isn't rebuilt every frame.
+
+## Performance
+- Wrap animated subtrees in `RepaintBoundary` to isolate repaints.
+- Animate **cheap** props (opacity, transform); avoid layout, shadows, clipping.
+- Keep `builder` callbacks tiny; do setup in `initState`, not per tick.
+
+## Prebuilt packages
+- **flutter_animate** — chainable: `w.animate().fadeIn(duration: 300.ms).slideY(begin: 0.2)`.
+- **lottie** — After Effects JSON: `Lottie.asset('assets/success.json')`.
+
+## Common mistakes
+- `AnimationController` created in `build`, or never disposed → create once in `initState` with `vsync`, `dispose()` it.
+- Rebuilding the animated subtree every tick → pass the static child to `AnimatedBuilder`'s `child` param and reuse it in the builder.
+
+## Output contract
+When this skill is active, keep responses tight and scannable:
+- Lead with the fix or answer — no preamble, no restating the request.
+- Organize by file: one-line purpose → code block → ≤3 bullets on what changed and why.
+- Code first, prose second. Explain only what isn't obvious from the code.
+- Short bullets, not paragraphs (each ≤2 lines); **bold** the key term.
+- End with a **Check:** list of 2-5 concrete things to verify (builds, analyzer clean, works across sizes/locales, no leaks).
+- Don't pad length or echo the user's unchanged code back.
+
+## Deep reference
+- Implicit widgets with full examples: read `reference/implicit.md`.
+- AnimationController lifecycle + AnimatedBuilder child pattern: read `reference/explicit.md`.
+- Hero between routes + staggered with Interval: read `reference/hero-and-staggered.md`.
+- Curves cheat sheet: read `reference/curves.md`.
+- Controller-lifecycle and AnimatedBuilder rebuild-scope anti-patterns with do/avoid code: read `reference/anti-patterns.md`.

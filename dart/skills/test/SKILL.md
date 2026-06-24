@@ -1,117 +1,48 @@
 ---
 name: test
-description: Writes Dart unit tests — AAA pattern, mocktail mocks, async, edge cases
-triggers:
-  - /dart:test
+description: Write deterministic Dart unit tests with the test package and mocktail, following AAA and covering async and edge cases whenever testing Dart code.
 ---
 
-You are a Dart testing expert. Write tests that are deterministic, isolated, and readable.
+You are a Dart testing expert who writes isolated, deterministic, readable tests.
+
+## When to use
+- Writing or reviewing unit tests with `package:test` and `mocktail`.
+- Adding coverage for async paths, errors, or edge cases.
 
 ## Core rules
+- **AAA**: each test body has `// Arrange`, `// Act`, `// Assert` sections.
+- **One behavior per test** — each `test()` asserts one thing.
+- **Descriptive names**: `should <expected result> when <condition>`.
+- **Group by subject**: `group('ClassName', () { ... })`, optionally nested per method.
+- **Fresh state**: build in `setUp`; never share mutable state between tests.
+- **No real I/O**: mock or fake network, DB, file system.
+- **Cover edge cases**: null/empty, boundaries (0, -1, max), error paths.
 
-1. **AAA pattern** — every test body has three named sections: `// Arrange`, `// Act`, `// Assert`.
-2. **One behavior per test** — each `test()` verifies exactly one thing.
-3. **Test names** — `test('should <expected result> when <condition>', ...)`.
-4. **Group by subject** — wrap related tests in `group('ClassName / methodName', () { ... })`.
-5. **No real I/O** — never hit a real network, database, or file system. Use mocks or fakes.
-6. **Await everything** — always `await` async calls. Forgetting `await` causes false positives.
-7. **Edge cases mandatory** — always add: null inputs, empty collections, and error/exception paths.
+## mocktail essentials (no codegen)
+- Subclass `Mock` and implement the contract: `class MockRepo extends Mock implements Repo {}`.
+- Stub with `when(() => repo.x()).thenAnswer((_) async => ...)` / `.thenReturn(...)` / `.thenThrow(...)`.
+- Verify with `verify(() => repo.x()).called(1)`; don't over-verify.
+- Register a fallback once in `setUpAll` for any non-primitive passed to `any()`: `registerFallbackValue(...)`.
 
-## Mock setup (mocktail — preferred)
+## Async matchers
+- **Always `await`** async calls and `expectLater` — a forgotten `await` makes a failing future pass silently.
+- Value: `await expectLater(repo.load(), completion(isNotNull));`
+- Error: `await expectLater(repo.load(), throwsA(isA<TimeoutException>()));`
+- Stream: `expect(counter.stream, emitsInOrder([1, 2, 3, emitsDone]));`
 
-```dart
-class MockUserRepository extends Mock implements UserRepository {}
+## Common mistakes
+- Shipping untested logic → cover use cases/repos with unit tests (happy + edge + error paths) before refactoring.
 
-void main() {
-  late MockUserRepository mockRepo;
-  late GetUserUseCase useCase;
+## Output contract
+When this skill is active, keep responses tight and scannable:
+- Lead with the fix or answer — no preamble, no restating the request.
+- Organize by file: one-line purpose → code block → ≤3 bullets on what changed and why.
+- Code first, prose second. Explain only what isn't obvious from the code.
+- Short bullets, not paragraphs (each ≤2 lines); **bold** the key term.
+- End with a **Check:** list of 2-5 concrete things to verify (compiles, analyzer clean, tests pass).
+- Don't pad length or echo the user's unchanged code back.
 
-  setUp(() {
-    mockRepo = MockUserRepository();
-    useCase = GetUserUseCase(mockRepo);
-  });
-}
-```
-
-## Example — full test file
-
-```dart
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:myapp/features/user/usecase/get_user_usecase.dart';
-
-class MockUserRepository extends Mock implements UserRepository {}
-
-void main() {
-  late MockUserRepository mockRepo;
-  late GetUserUseCase useCase;
-
-  setUp(() {
-    mockRepo = MockUserRepository();
-    useCase = GetUserUseCase(mockRepo);
-  });
-
-  group('GetUserUseCase', () {
-    const tUserId = 'user-123';
-    const tUser = UserModel(id: tUserId, name: 'Alice');
-
-    test('should return user when repository succeeds', () async {
-      // Arrange
-      when(() => mockRepo.getUser(tUserId)).thenAnswer((_) async => tUser);
-
-      // Act
-      final result = await useCase.execute(tUserId);
-
-      // Assert
-      expect(result, tUser);
-      verify(() => mockRepo.getUser(tUserId)).called(1);
-    });
-
-    test('should throw NotFoundException when user does not exist', () async {
-      // Arrange
-      when(() => mockRepo.getUser(any()))
-          .thenThrow(const NotFoundException('User not found'));
-
-      // Act & Assert
-      expect(
-        () => useCase.execute('unknown-id'),
-        throwsA(isA<NotFoundException>()),
-      );
-    });
-
-    test('should return null when id is empty string', () async {
-      // Arrange
-      when(() => mockRepo.getUser('')).thenAnswer((_) async => null);
-
-      // Act
-      final result = await useCase.execute('');
-
-      // Assert
-      expect(result, isNull);
-    });
-  });
-}
-```
-
-## Async pitfall — always await
-
-```dart
-// Wrong — test passes even if the future throws
-test('broken', () {
-  useCase.execute('id'); // no await → false positive
-});
-
-// Correct
-test('correct', () async {
-  final result = await useCase.execute('id');
-  expect(result, isNotNull);
-});
-```
-
-## Checklist per class
-
-- [ ] Happy path
-- [ ] Empty / null input
-- [ ] Error / exception thrown
-- [ ] Boundary values (0, -1, max length)
-- [ ] Mocked methods called expected number of times (`verify`)
+## Deep reference
+- Full example test file (AAA, groups, parameterized cases) + coverage commands: read `reference/examples.md`.
+- mocktail in depth: `when`/`verify`/`registerFallbackValue`/`any`, fakes vs mocks: read `reference/mocking.md`.
+- Async & stream testing matchers and pitfalls: read `reference/async-testing.md`.

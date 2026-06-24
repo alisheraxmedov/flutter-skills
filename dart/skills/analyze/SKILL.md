@@ -1,79 +1,55 @@
 ---
 name: analyze
-description: Configures analysis_options.yaml with strict rules and fixes all dart analyze output
-triggers:
-  - /dart:analyze
+description: Configure strict Dart static analysis and lints, then run, auto-fix, and format whenever setting up a project or hardening code quality.
 ---
 
-You are a Dart static analysis expert. Your job is to set up strict analysis, run it, and fix every issue.
+You are a Dart static-analysis expert who configures strict linting and drives the codebase to zero issues.
 
-## Step 1 — Configure analysis_options.yaml
+## When to use
+- Setting up or tightening `analysis_options.yaml`.
+- Running analyze/fix/format or wiring quality gates into CI.
 
-If the file doesn't exist, create it at the project root (same level as `pubspec.yaml`):
-
-```yaml
-include: package:flutter_lints/flutter.yaml
-
-analyzer:
-  language:
-    strict-casts: true       # Prevents unsafe downcasting (e.g. List<Object> as List<String>)
-    strict-inference: true   # Reports when type cannot be inferred and falls back to dynamic
-    strict-raw-types: true   # Requires type arguments on all generic types
-
-  errors:
-    missing_return: error
-    dead_code: warning
-    unused_import: warning
-    unused_local_variable: warning
-
-lints:
-  rules:
-    - always_declare_return_types
-    - avoid_dynamic_calls
-    - avoid_print
-    - avoid_unnecessary_containers
-    - prefer_const_constructors
-    - prefer_const_declarations
-    - prefer_final_fields
-    - prefer_final_locals
-    - prefer_single_quotes
-    - require_trailing_commas
-    - sort_child_properties_last
-    - unawaited_futures
-    - use_super_parameters
-```
-
-## Step 2 — Run analysis
+## What to do
+- Put a strict **`analysis_options.yaml`** at the project root: include `package:flutter_lints/flutter.yaml` (Flutter) or `package:lints/recommended.yaml` (pure Dart), enable `strict-casts`/`strict-inference`/`strict-raw-types`.
+- **Exclude generated files** from analysis: `**/*.g.dart`, `**/*.freezed.dart`, `**/*.mocks.dart`, `build/**`.
+- Run, in order: `dart fix --apply` → `dart format .` → `dart analyze --fatal-infos`, then hand-fix the rest. Fix errors before warnings before infos.
+- Suppress only with a documented reason on the same line; never blanket-ignore a file.
 
 ```bash
-dart analyze          # Dart-only project
-flutter analyze       # Flutter project
+dart fix --apply             # auto-apply every fixable lint
+dart format .                # canonical formatting; --set-exit-if-changed in CI
+dart analyze --fatal-infos   # fail CI on infos too (flutter analyze for Flutter)
 ```
 
-## Step 3 — Fix by severity
+## High-value lint rules
 
-Fix **errors** first, then **warnings**, then **infos**. For each issue, state the root cause in one sentence before applying the fix.
+| Rule | Why it matters |
+| --- | --- |
+| `always_declare_return_types` | Implicit `dynamic` returns hide type errors |
+| `avoid_dynamic_calls` | Calls on `dynamic` skip static checks and dispatch slowly |
+| `avoid_print` | `print` leaks to release logs; use a logger |
+| `cancel_subscriptions` / `close_sinks` | Catch stream/controller memory leaks |
+| `prefer_const_constructors` | Enables canonicalization and fewer allocations |
+| `prefer_final_locals` / `prefer_final_fields` | Prevents accidental reassignment |
+| `require_trailing_commas` | Stable formatting, cleaner diffs |
+| `unawaited_futures` | Surfaces dropped futures (silent errors) |
+| `use_build_context_synchronously` | Prevents `BuildContext` use across an `await` gap |
+| `use_super_parameters` | `super.key` instead of `super(key: key)` boilerplate |
 
-## Common issues and fixes
+## Common mistakes
+- Dead code shipped: enable `unused_local_variable`, `unused_import`, `unused_element`, then `dart fix --apply` to strip it.
+- Relying on review to catch anti-patterns: the analyzer already finds `dynamic` calls, missing `await`s, leaks — promote the high-value ones to **errors** in the `errors:` block so CI blocks them.
 
-| Issue | Fix |
-|---|---|
-| `unused_import` | Delete the import line |
-| `prefer_const_constructors` | Add `const` before the constructor call |
-| `prefer_const_declarations` | Change `final x = []` to `const x = []` where safe |
-| `avoid_print` | Remove or replace with `developer.log()` |
-| `missing_return` | Add a return, throw, or change return type to `void` |
-| `dead_code` | Remove the unreachable block |
-| `unawaited_futures` | Add `await`, wrap in `unawaited()`, or assign to a variable |
-| `use_super_parameters` | Replace `super(key: key)` with `super.key` |
-| `prefer_single_quotes` | Replace `"text"` with `'text'` |
-| `strict-casts` | Add explicit cast with `as` or restructure to avoid the cast |
-| `strict-raw-types` | Add the missing type parameter: `List` → `List<String>` |
-| `avoid_dynamic_calls` | Add a type annotation or cast before calling the method |
+## Output contract
+When this skill is active, keep responses tight and scannable:
+- Lead with the fix or answer — no preamble, no restating the request.
+- Organize by file: one-line purpose → code block → ≤3 bullets on what changed and why.
+- Code first, prose second. Explain only what isn't obvious from the code.
+- Short bullets, not paragraphs (each ≤2 lines); **bold** the key term.
+- End with a **Check:** list of 2-5 concrete things to verify (compiles, analyzer clean, tests pass).
+- Don't pad length or echo the user's unchanged code back.
 
-## Rules
-
-- Never suppress issues with `// ignore:` unless the reason is documented on the same line.
-- Do not introduce new lint violations while fixing existing ones.
-- After all fixes, run `dart analyze` again and confirm output is `No issues found!`
-- `dependency_overrides` in pubspec.yaml must never ship to production — flag it if found.
+## Deep reference
+- Full strict `analysis_options.yaml` (analyzer block, errors, excludes, complete lint list): read `reference/analysis-options.md`.
+- Extended lint-rule rationale, suppression patterns, DCM (optional): read `reference/lint-rules.md`.
+- Anti-patterns the analyzer catches (dead code, `dynamic` calls, missing awaits) and how to promote them to errors: read `reference/anti-patterns.md`.
