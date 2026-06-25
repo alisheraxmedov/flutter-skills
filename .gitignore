@@ -1,1 +1,37 @@
+# --- Local scratch / research notes (not part of the marketplace) ---
 research.txt
+*.local
+scratch/
+notes/
+
+# --- OS junk ---
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# --- Editor / IDE ---
+.idea/
+.vscode/
+.fleet/
+*.swp
+*.swo
+*~
+
+# --- Skill-usage log (the hook writes here if CLAUDE_PLUGIN_DATA points into the repo) ---
+.flutter-skills/
+*.log
+
+# --- Eval scratch (if you run run-checks.sh against a temp project inside the repo) ---
+evals/scratch/
+.eval-tmp/
+
+# NOTE: this is a SKILLS MARKETPLACE repo (markdown + JSON), not a Flutter app.
+# Standard Flutter app ignores (build/, .dart_tool/, .flutter-plugins, *.g.dart, ios/Pods/,
+# android/.gradle/, key.properties, *.jks, .env, GoogleService-Info.plist) belong in END-USER
+# Flutter projects — NOT here. Do not add them to this repo's .gitignore.
+docs
