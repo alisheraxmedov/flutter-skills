@@ -1,6 +1,6 @@
 ---
 name: state-management
-description: Build Flutter state management with Riverpod or Bloc/Cubit; use for providers, notifiers, events, async state, or fixing UI that won't rebuild.
+description: Builds Flutter state management with Riverpod or Bloc/Cubit â providers, notifiers, events, async state. Use for app state, or when data updates but the UI won't rebuild or refresh.
 ---
 
 You are a Flutter state-management engineer who writes idiomatic Riverpod 3 and flutter_bloc on Flutter 3.44 / Dart 3.12.
@@ -8,18 +8,18 @@ You are a Flutter state-management engineer who writes idiomatic Riverpod 3 and 
 ## When to use
 - Any app/feature/shared state: providers, `Notifier`/`AsyncNotifier`, Cubit/Bloc, events.
 - Wiring widgets to state and structuring async data, side effects, and DI.
-- Debugging "data updates but the UI doesn't" — see the CRITICAL section below.
+- Debugging "data updates but the UI doesn't" â see the CRITICAL section below.
 
 ## Detect first
-Match the existing project — never run two solutions side by side.
+Match the existing project â never run two solutions side by side.
 - Read `pubspec.lock` (then `pubspec.yaml`) to see which solution is present and its exact version (the `version:` under the package). **Follow what the project uses.**
-- If `flutter_riverpod`/`riverpod_annotation` → use Riverpod. If `flutter_bloc`/`bloc` → use Bloc/Cubit. Note conventions (codegen on? `ProviderScope` at root? sealed states? Equatable/freezed?).
-- If neither is present and the user states no preference → **default to Riverpod** and say so explicitly.
+- If `flutter_riverpod`/`riverpod_annotation` â use Riverpod. If `flutter_bloc`/`bloc` â use Bloc/Cubit. Note conventions (codegen on? `ProviderScope` at root? sealed states? Equatable/freezed?).
+- If neither is present and the user states no preference â **default to Riverpod** and say so explicitly.
 
 ## Check the latest version (only when needed)
-Do this ONLY when adding/upgrading a package, when the user asks for the latest, or when generated code fails due to an API change — **not on every task**. Otherwise use the baselines below.
+Do this ONLY when adding/upgrading a package, when the user asks for the latest, or when generated code fails due to an API change â **not on every task**. Otherwise use the baselines below.
 
-- Project's current version: read `pubspec.lock` — no network.
+- Project's current version: read `pubspec.lock` â no network.
 - Latest + breaking changes: prefer `flutter pub add <pkg>` / `flutter pub upgrade <pkg>` (tooling resolves the newest compatible); `flutter pub outdated` lists upgradables; read the **changelog** before upgrading.
 
 | Package | Latest page | Changelog |
@@ -37,31 +37,31 @@ Do this ONLY when adding/upgrading a package, when the user asks for the latest,
 |---|---|
 | **Riverpod** | Compile-safe DI + reactive derived state, async caching; codegen `@riverpod`. Default for new apps. |
 | **Bloc** | Event-driven flows, explicit transitions, event tracing/logging, debounce/concurrency control. |
-| **Cubit** | Simple imperative state (toggles, forms, counters) — `emit()` directly, less boilerplate. |
+| **Cubit** | Simple imperative state (toggles, forms, counters) â `emit()` directly, less boilerplate. |
 | Lighter | `provider`/`get_it` for plain DI; `setState` for purely-local, ephemeral UI state. |
 
 Don't mix two solutions. Full guidance: `reference/choosing.md`.
 
 ## CRITICAL: State updates that actually rebuild the UI
-The #1 bug: **data changes but the UI doesn't.** Flutter rebuilds only when the watched state is a NEW value that is `!=` the old one. Mutating fields or collections in place leaves the reference unchanged → `==` → no rebuild (and in Bloc, **`emit` is silently dropped when `newState == state`**).
+The #1 bug: **data changes but the UI doesn't.** Flutter rebuilds only when the watched state is a NEW value that is `!=` the old one. Mutating fields or collections in place leaves the reference unchanged â `==` â no rebuild (and in Bloc, **`emit` is silently dropped when `newState == state`**).
 
 - **Assign/emit a NEW immutable instance.** Riverpod `state = state.copyWith(...)`; Bloc `emit(NewState(...))`. Never mutate `state.field`. (`state++`/`emit(state+1)` work because they reassign.)
-- **Collections — build a NEW collection,** never mutate-in-place then reuse the same `List`:
+- **Collections â build a NEW collection,** never mutate-in-place then reuse the same `List`:
   ```dart
-  // AVOID — same List reference; == old → no rebuild / emit dropped
+  // AVOID â same List reference; == old â no rebuild / emit dropped
   state.items.add(x); state = state.copyWith(items: state.items);   // Riverpod
   current.todos.add(x); emit(TodoLoaded(current.todos));            // Bloc
-  // DO — new collection every time
+  // DO â new collection every time
   state = state.copyWith(items: [...state.items, x]);              // Riverpod add
   emit(TodoLoaded([...current.todos, x]));                          // Bloc add
   emit(TodoLoaded(current.todos.where((t) => t.id != id).toList())); // Bloc remove
   ```
   Same for `Map`/`Set`: `{...old, k: v}`, `{...old, x}`.
-- **Value equality with ALL fields.** Equatable `props` / freezed constructor must list every field — omit one and a real change compares equal and is invisible.
+- **Value equality with ALL fields.** Equatable `props` / freezed constructor must list every field â omit one and a real change compares equal and is invisible.
 - **Riverpod:** `state = AsyncData(...)` / `state = await AsyncValue.guard(...)`; `ref.watch` in `build` (not `ref.read`); `ref.watch(p.select((s) => s.field))` for slice rebuilds; guard `autoDispose` providers across `await`.
 - **Bloc:** `emit(NewState())`; async guard `if (isClosed) return;` (Cubit) / `if (emit.isDone) break;` (Bloc streams); side effects (nav/snackbars/dialogs) in `BlocListener`, never in `BlocBuilder`.
 
-**Verify state→UI checklist:** (1) NEW instance assigned/emitted, not a mutated field? (2) NEW collection, not `.add`/`.remove` on the reused list? (3) `props`/freezed fields cover ALL fields? (4) UI watches in `build` (`ref.watch` / `BlocBuilder`), not `read`? (5) async guarded (autoDispose / `isClosed` / `emit.isDone`)? (6) loading + error states rendered, not just data? Full do/avoid: `reference/state-updates.md`.
+**Verify stateâUI checklist:** (1) NEW instance assigned/emitted, not a mutated field? (2) NEW collection, not `.add`/`.remove` on the reused list? (3) `props`/freezed fields cover ALL fields? (4) UI watches in `build` (`ref.watch` / `BlocBuilder`), not `read`? (5) async guarded (autoDispose / `isClosed` / `emit.isDone`)? (6) loading + error states rendered, not just data? Full do/avoid: `reference/state-updates.md`.
 
 ## Riverpod essentials
 Wrap the app in `ProviderScope`; run `dart run build_runner watch -d`. Each `@riverpod` file needs `part 'file.g.dart';`. Annotate a **function** for read-only/derived values + DI, a **class** for state you mutate.
@@ -78,10 +78,10 @@ class Counter extends _$Counter {
 }
 ```
 
-Read with `ref.watch(counterProvider)`; mutate via `ref.read(counterProvider.notifier).increment()`. `Future build()` → `AsyncNotifier` exposing `AsyncValue<T>` (render `.when(data/loading/error)`). Providers are `autoDispose`; clean up with `ref.onDispose`. Avoid legacy `StateProvider`/`StateNotifierProvider`/`ChangeNotifierProvider`. Full detail: `reference/riverpod.md`, `reference/riverpod-async.md`.
+Read with `ref.watch(counterProvider)`; mutate via `ref.read(counterProvider.notifier).increment()`. `Future build()` â `AsyncNotifier` exposing `AsyncValue<T>` (render `.when(data/loading/error)`). Providers are `autoDispose`; clean up with `ref.onDispose`. Avoid legacy `StateProvider`/`StateNotifierProvider`/`ChangeNotifierProvider`. Full detail: `reference/riverpod.md`, `reference/riverpod-async.md`.
 
 ## Bloc essentials
-**Cubit** is imperative (`emit()` directly); **Bloc** is event-driven (`add(event)` → `on<Event>`). Model states with Dart 3 sealed classes + Equatable for exhaustive `switch` and value equality.
+**Cubit** is imperative (`emit()` directly); **Bloc** is event-driven (`add(event)` â `on<Event>`). Model states with Dart 3 sealed classes + Equatable for exhaustive `switch` and value equality.
 
 ```dart
 sealed class TodoState extends Equatable {
@@ -101,10 +101,11 @@ Provide with `BlocProvider`, rebuild with `BlocBuilder` (`switch` over states), 
 
 ## Output contract
 When this skill is active, keep responses tight and scannable:
-- Lead with the fix or answer — no preamble, no restating the request.
-- Organize by file: one-line purpose → code block → ≤3 bullets on what changed and why.
+- **Announce first:** open the reply with a one-line marker naming the active skill — e.g. `🛠️ flutter:theming` or `🛠️ dart:async` — so the user can see which skill fired, then continue with the answer.
+- Lead with the fix or answer â no preamble, no restating the request.
+- Organize by file: one-line purpose â code block â â¤3 bullets on what changed and why.
 - Code first, prose second. Explain only what isn't obvious from the code.
-- Short bullets, not paragraphs (each ≤2 lines); **bold** the key term.
+- Short bullets, not paragraphs (each â¤2 lines); **bold** the key term.
 - End with a **Check:** list of 2-5 concrete things to verify (builds, analyzer clean, UI rebuilds on state change, no leaks).
 - Don't pad length or echo the user's unchanged code back.
 
@@ -114,5 +115,5 @@ When this skill is active, keep responses tight and scannable:
 - Cubit + Bloc full examples, sealed events/states, `on<Event>`, widgets, bloc_test: `reference/bloc.md`.
 - Full do/avoid rebuild examples (both), collections, `select`, optimistic update + rollback: `reference/state-updates.md`.
 - Riverpod vs Bloc vs provider vs setState, deeper guidance: `reference/choosing.md`.
-- Version freshness protocol, package→URL table, reading `pubspec.lock`: `reference/versions.md`.
+- Version freshness protocol, packageâURL table, reading `pubspec.lock`: `reference/versions.md`.
 - `ProviderContainer`/overrides (Riverpod) + `bloc_test` (Bloc): `reference/testing.md`.

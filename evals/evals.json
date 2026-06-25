@@ -1,0 +1,222 @@
+[
+  {
+    "id": "state-management-add-item",
+    "skill": "flutter:state-management",
+    "query": "I have a Riverpod TodoListNotifier holding a List<Todo>. Add an addTodo(Todo todo) method. The UI isn't rebuilding when I add items — fix that too.",
+    "expected_behavior": [
+      "emits a NEW list via spread (`[...state, todo]`) or `.toList()`, producing a new reference each update",
+      "assigns the result back to `state` (Riverpod) so a `!=` value triggers a rebuild",
+      "the rendering widget uses `ref.watch(...)` inside `build`, not `ref.read`",
+      "ends with a Check: list of things to verify (per the output contract)"
+    ],
+    "anti_behaviors": [
+      "calls `state.add(todo)` / `state.items.add(...)` mutating the existing list then re-emits the same reference",
+      "uses `ref.read(provider)` inside `build` to render state",
+      "uses legacy `StateNotifierProvider` / `ChangeNotifierProvider`"
+    ]
+  },
+  {
+    "id": "state-management-bloc-emit",
+    "skill": "flutter:state-management",
+    "query": "In my flutter_bloc TodoBloc, removing a todo doesn't update the screen even though the handler runs. Here's the on<RemoveTodo> handler. Fix it.",
+    "expected_behavior": [
+      "emits a NEW state instance containing a NEW collection, e.g. `emit(TodoLoaded(state.todos.where((t) => t.id != id).toList()))`",
+      "state class lists EVERY field in Equatable `props` (or uses freezed) so equality is correct",
+      "side effects (snackbars/navigation) go in `BlocListener`, not `BlocBuilder`"
+    ],
+    "anti_behaviors": [
+      "mutates `state.todos` in place (`.remove(...)`) then emits a state holding the same list reference",
+      "emits a state whose `props` omit the changed field, making the new state compare equal and the emit silently dropped"
+    ]
+  },
+  {
+    "id": "theming-seed-colorscheme",
+    "skill": "flutter:theming",
+    "query": "Set up a centralized Material 3 theme with light and dark mode for my app. Brand color is a purple around #6750A4.",
+    "expected_behavior": [
+      "generates the scheme with `ColorScheme.fromSeed(seedColor: ..., brightness: ...)` for both light and dark",
+      "defines `ThemeData` in a centralized location (e.g. `lib/core/theme/`), not inline per screen",
+      "wires `MaterialApp(theme:, darkTheme:, themeMode:)`",
+      "widgets read colors via `Theme.of(context).colorScheme` / `.textTheme`"
+    ],
+    "anti_behaviors": [
+      "hardcodes `Color(0xFF...)` hex literals inside widget build methods",
+      "uses deprecated `primaryColor` / `accentColor` / `backgroundColor` on ThemeData",
+      "sets `useMaterial3: false` or hand-picks every color instead of seeding"
+    ]
+  },
+  {
+    "id": "optimization-long-list",
+    "skill": "flutter:optimization",
+    "query": "My screen shows 5000 messages in a SingleChildScrollView with a Column of message widgets and it's janky. Make it smooth.",
+    "expected_behavior": [
+      "replaces the `Column` with `ListView.builder` (or `SliverList.builder`) so items build lazily",
+      "extracts each row as a `const`-capable `StatelessWidget` rather than a `_buildRow()` helper method",
+      "mentions stable `Key`s and/or `itemExtent` for fixed-height rows where applicable"
+    ],
+    "anti_behaviors": [
+      "keeps `SingleChildScrollView` + `Column(children: items.map(...).toList())` for the long list",
+      "builds all 5000 children up front via `.map().toList()`",
+      "uses a `Widget _buildRow()` helper method instead of a real widget class"
+    ]
+  },
+  {
+    "id": "optimization-dispose-controller",
+    "skill": "flutter:optimization",
+    "query": "Review this StatefulWidget that creates an AnimationController and a ScrollController. Is it leaking? Fix any leaks.",
+    "expected_behavior": [
+      "disposes every controller (`AnimationController`, `ScrollController`) in `dispose()`",
+      "creates controllers in `initState`, not in `build`",
+      "checks `mounted` after any `await` before calling `setState` / touching `context`"
+    ],
+    "anti_behaviors": [
+      "leaves a controller undisposed",
+      "creates a controller inside `build()`",
+      "stores `BuildContext` in a long-lived field"
+    ]
+  },
+  {
+    "id": "forms-login-lifecycle",
+    "skill": "flutter:forms",
+    "query": "Build a login form with email + password fields, validation, and an async submit that calls authRepo.login then navigates home on success.",
+    "expected_behavior": [
+      "uses a `StatefulWidget` and disposes every `TextEditingController` (and `FocusNode`) in `dispose()`",
+      "guards the post-await context with `if (!context.mounted) return;` before navigating or showing a snackbar",
+      "follows a `validate()` → `save()` → submit flow and disables the submit button while loading",
+      "wires `textInputAction` / `onFieldSubmitted` for focus navigation between fields"
+    ],
+    "anti_behaviors": [
+      "creates `TextEditingController` inside `build` or never disposes it",
+      "uses `context` after `await` without a `context.mounted` check",
+      "leaves the submit button enabled during the async call (no double-tap guard)"
+    ]
+  },
+  {
+    "id": "error-handling-result-boundary",
+    "skill": "flutter:error-handling",
+    "query": "My UserRepository.fetchUser does a network call and throws on failure, and my UI wraps it in try/catch. Refactor to typed error handling.",
+    "expected_behavior": [
+      "returns a sealed `Result<T>` (Success | Failure) from the repository, not a thrown exception",
+      "maps the caught exception to a typed `AppFailure` (Server/Network/Timeout/...) at the data-layer boundary",
+      "each `Failure` carries a user-safe `message`; raw exceptions/stack traces are not shown to users",
+      "the UI pattern-matches the `Result` exhaustively (switch) instead of try/catch"
+    ],
+    "anti_behaviors": [
+      "leaves an empty `catch {}` or silent `catchError((_) {})` that swallows the error",
+      "keeps `try/catch` in the UI layer for the network call",
+      "shows the raw exception or stack trace to the user"
+    ]
+  },
+  {
+    "id": "networking-dio-client",
+    "skill": "flutter:networking",
+    "query": "Set up a dio-based API client for my app with a Bearer auth header and request logging. Base URL is https://api.example.com.",
+    "expected_behavior": [
+      "builds ONE configured `Dio` instance (base URL, timeouts) injected via DI, not `Dio()` per request",
+      "adds the auth Bearer token in an interceptor `onRequest`, not inline at each call site",
+      "guards `LogInterceptor` with `kDebugMode` so bodies/tokens are not logged in release",
+      "reads the base URL from config / `--dart-define` / an `Env` object rather than committing a secret"
+    ],
+    "anti_behaviors": [
+      "constructs `Dio()` per request instead of reusing one instance",
+      "hardcodes an API key or secret token literal in the client source",
+      "enables `LogInterceptor` unconditionally (dumps auth headers in release)"
+    ]
+  },
+  {
+    "id": "navigation-go-router-auth",
+    "skill": "flutter:navigation",
+    "query": "Add go_router to my app with a /login route and a /home route gated behind auth, plus a bottom-nav shell. Deep links must keep working.",
+    "expected_behavior": [
+      "configures ONE `GoRouter` with a `rootNavigatorKey` passed to `MaterialApp.router(routerConfig:)`",
+      "centralizes auth gating in the router `redirect` plus a `refreshListenable` tied to auth state",
+      "uses typed routes (`GoRouteData` + `@TypedGoRoute`) and navigates with route objects, not raw string paths",
+      "provides an `errorBuilder` for unmatched paths"
+    ],
+    "anti_behaviors": [
+      "scatters auth checks inside individual widgets instead of the router redirect",
+      "sets a fixed `initialLocation` that clobbers an incoming deep link",
+      "creates a second router / mixes Navigator 1.0 with go_router"
+    ]
+  },
+  {
+    "id": "dart-declarations-nullsafety",
+    "skill": "dart:dart",
+    "query": "Clean up this Dart class: it uses `var` everywhere, positional params, and a few `!` force-unwraps. Make it idiomatic.",
+    "expected_behavior": [
+      "defaults fields and locals to `final`, using `var` only where a value is genuinely reassigned",
+      "uses `required` named parameters for mandatory inputs",
+      "replaces unjustified `!` with `?.` / `??` / null-promotion",
+      "names are intention-revealing (no abbreviations like `db`/`temp`)"
+    ],
+    "anti_behaviors": [
+      "keeps unnecessary `!` force-unwraps on values that aren't provably non-null",
+      "leaves `var` on fields that are never reassigned",
+      "uses bare `late` without a real need, or `dynamic` to dodge typing"
+    ]
+  },
+  {
+    "id": "model-immutable-class",
+    "skill": "dart:model",
+    "query": "Model a User entity with id, name, and optional email. It should have value equality and be usable in a Set.",
+    "expected_behavior": [
+      "all fields are `final` (no setters) and the class has a `const` constructor where possible",
+      "implements structural `==` and `hashCode` (via `Object.hash`) or uses freezed to generate them",
+      "uses `required` for id and name; `String?` only for the genuinely-optional email",
+      "every field is typed (no `dynamic`)"
+    ],
+    "anti_behaviors": [
+      "uses mutable (non-final) fields or setters",
+      "relies on default reference equality (no `==`/`hashCode`) for a value object",
+      "marks a mandatory field nullable with a null default instead of `required`"
+    ]
+  },
+  {
+    "id": "async-parallel-and-leaks",
+    "skill": "dart:async",
+    "query": "This widget awaits fetchProfile(), then fetchSettings(), then fetchFeed() one after another, and subscribes to a notifications stream. Speed it up and stop the leak.",
+    "expected_behavior": [
+      "runs the three independent fetches concurrently with `Future.wait` (or record `.wait`), not sequential awaits",
+      "cancels the `StreamSubscription` (and closes any controller) in `dispose`",
+      "handles errors on each async path (try/catch or typed failure), never a silent drop",
+      "re-checks `mounted` after an `await` before using state/`context`"
+    ],
+    "anti_behaviors": [
+      "keeps the three independent fetches as sequential `await`s",
+      "leaves the `StreamSubscription` uncancelled (leak)",
+      "drops a future fire-and-forget without `unawaited(...)` or error handling"
+    ]
+  },
+  {
+    "id": "test-aaa-mocktail",
+    "skill": "flutter:test",
+    "query": "Write a unit test for LoginUseCase, which depends on an AuthRepository. Cover the success path and the invalid-credentials failure path.",
+    "expected_behavior": [
+      "mocks `AuthRepository` with `mocktail` (no codegen) and registers fallbacks if needed",
+      "tests follow Arrange-Act-Assert structure with clear setup, call, and assertion sections",
+      "asserts on behavior/returned value (and interactions via `verify`), not merely that it does not throw",
+      "covers both the success and the failure path as separate tests"
+    ],
+    "anti_behaviors": [
+      "asserts only `returnsNormally` / 'no throw' without checking the actual result",
+      "calls the real `AuthRepository` instead of a mock",
+      "merges arrange/act/assert into one tangled block with no structure"
+    ]
+  },
+  {
+    "id": "review-severity-report",
+    "skill": "flutter:review",
+    "query": "Review this diff: it adds a screen that hardcodes an API key, never disposes its AnimationController, and uses a SingleChildScrollView+Column for a 1000-item list.",
+    "expected_behavior": [
+      "leads with a verdict (Changes needed / Approve) and counts of findings",
+      "groups findings by severity: Blocking, Should-fix, Nit",
+      "flags the hardcoded API key and the undisposed controller as Blocking (security + leak)",
+      "gives each finding a concrete fix and ends with a Definition-of-done check"
+    ],
+    "anti_behaviors": [
+      "silently rewrites the code instead of reporting findings (unless asked to apply fixes)",
+      "misclassifies the hardcoded secret or the leak as a Nit",
+      "returns prose with no severity grouping"
+    ]
+  }
+]

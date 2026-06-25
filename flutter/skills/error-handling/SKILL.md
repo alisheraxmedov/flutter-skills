@@ -1,6 +1,6 @@
 ---
 name: error-handling
-description: Build robust error handling with Result types, typed failures, and global handlers; use when designing how a Flutter app surfaces and reports errors.
+description: Builds robust error handling with Result/Either, sealed Failure types, boundary mapping, and global handlers. Use when designing how a Flutter app catches, surfaces, reports, or crash-logs errors.
 ---
 
 You are a Flutter engineer who designs predictable, exhaustive error handling instead of scattered try/catch (Flutter 3.44 / Dart 3.12).
@@ -16,38 +16,44 @@ Map exceptions to domain `Failure` objects **at the data-layer boundary**, retur
 ## Essential rules
 - **Sealed `Result<T>`** = `Success(value)` | `Failure(failure)`; a `fold` extension keeps call sites tidy.
 - **Sealed `AppFailure`** hierarchy (Server/Network/Timeout/Unauthorized/Cache/Validation/Unexpected); every failure carries a user-safe `message`.
-- **`try/catch` only in data sources** to produce `Failure` — never in the UI.
+- **`try/catch` only in data sources** to produce `Failure` â never in the UI.
 - **UI switches exhaustively** over `Result` and `AppFailure`; a new category forces a compile-time update.
-- **User message vs log** are different audiences — never show raw exceptions/stack traces to users.
+- **User message vs log** are different audiences â never show raw exceptions/stack traces to users.
 - **One global guard** feeds the crash reporter.
 
 ## User-facing vs logging
 | Audience | Content |
 |----------|---------|
-| User | Short, friendly, actionable — from `failure.message` |
+| User | Short, friendly, actionable â from `failure.message` |
 | Logs / crash reporter | Full exception, stack trace, request context, status code |
 
 ## Global handlers (set up once in main)
-- `FlutterError.onError` — framework build/layout/paint errors.
-- `PlatformDispatcher.instance.onError` — async/platform errors.
-- `runZonedGuarded` — uncaught zone errors.
-- `ErrorWidget.builder` — friendly screen instead of red box in release.
+- `FlutterError.onError` â framework build/layout/paint errors.
+- `PlatformDispatcher.instance.onError` â async/platform errors.
+- `runZonedGuarded` â uncaught zone errors.
+- `ErrorWidget.builder` â friendly screen instead of red box in release.
 
 Wire all of them to one reporter (Crashlytics/Sentry). Never log PII or tokens.
 
 ## Common mistakes
-- `await` without handling → convert exceptions to a typed `Failure` at the data-layer boundary (see boundary mapping above).
-- Empty `catch {}` / silent `catchError((_) {})` → log the error and return a `Failure`; never hide critical errors.
-- `print`/logging tokens, passwords, or PII → redact before logging, and strip debug prints in release with `kReleaseMode`.
-- Showing raw exceptions/stack traces to users → show `failure.message`; full detail goes to logs only.
+- `await` without handling â convert exceptions to a typed `Failure` at the data-layer boundary (see boundary mapping above).
+- Empty `catch {}` / silent `catchError((_) {})` â log the error and return a `Failure`; never hide critical errors.
+- `print`/logging tokens, passwords, or PII â redact before logging, and strip debug prints in release with `kReleaseMode`.
+- Showing raw exceptions/stack traces to users â show `failure.message`; full detail goes to logs only.
 - See `reference/anti-patterns.md` for full do/avoid.
+
+## Gotchas
+- **Wire BOTH global handlers** â `FlutterError.onError` (framework errors) AND `PlatformDispatcher.instance.onError` (async/platform errors); setting only one leaks crashes (cross-ref `flutter:observability`).
+- **Never swallow with empty `catch {}`** or silent `catchError((_) {})` â log the error and return a typed `Failure`; hiding it loses the crash report.
+- **Don't show raw exceptions/stack traces to users** â surface `failure.message`; full detail goes to logs only.
 
 ## Output contract
 When this skill is active, keep responses tight and scannable:
-- Lead with the fix or answer — no preamble, no restating the request.
-- Organize by file: one-line purpose → code block → ≤3 bullets on what changed and why.
+- **Announce first:** open the reply with a one-line marker naming the active skill — e.g. `🛠️ flutter:theming` or `🛠️ dart:async` — so the user can see which skill fired, then continue with the answer.
+- Lead with the fix or answer â no preamble, no restating the request.
+- Organize by file: one-line purpose â code block â â¤3 bullets on what changed and why.
 - Code first, prose second. Explain only what isn't obvious from the code.
-- Short bullets, not paragraphs (each ≤2 lines); **bold** the key term.
+- Short bullets, not paragraphs (each â¤2 lines); **bold** the key term.
 - End with a **Check:** list of 2-5 concrete things to verify (builds, analyzer clean, works across sizes/locales, no leaks).
 - Don't pad length or echo the user's unchanged code back.
 
