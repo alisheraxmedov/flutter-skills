@@ -4,9 +4,20 @@
   "version": "3.1.0",
   "author": {
     "name": "alisherakhmedov",
-    "email": "alisher.summertech.ai@gmail.com"
+    "email": "alisheraxmedov4x4@gmail.com"
   },
   "license": "MIT",
-  "keywords": ["flutter", "riverpod", "bloc", "go_router", "dio", "theming", "architecture", "testing", "performance", "code-review"],
+  "keywords": [
+    "flutter",
+    "riverpod",
+    "bloc",
+    "go_router",
+    "dio",
+    "theming",
+    "architecture",
+    "testing",
+    "performance",
+    "code-review"
+  ],
   "skills": "./skills/"
 }
