@@ -1,0 +1,107 @@
+[
+  {
+    "id": "state-management-add-item",
+    "skill": "flutter:state-management",
+    "query": "I have a Riverpod TodoListNotifier holding a List<Todo>. Add an addTodo(Todo todo) method. The UI isn't rebuilding when I add items — fix that too.",
+    "expected_behavior": [
+      "emits a NEW list via spread (`[...state, todo]`) or `.toList()`, producing a new reference each update",
+      "assigns the result back to `state` so a `!=` value triggers a rebuild",
+      "the rendering widget uses `ref.watch(...)` inside `build`, not `ref.read`"
+    ],
+    "anti_behaviors": [
+      "calls `state.add(todo)` mutating the existing list then re-emits the same reference",
+      "uses `ref.read(provider)` inside `build` to render state",
+      "uses legacy `StateNotifierProvider` / `ChangeNotifierProvider`"
+    ]
+  },
+  {
+    "id": "navigation-go-router-auth",
+    "skill": "flutter:navigation",
+    "query": "Add go_router to my app with a /login route and a /home route gated behind auth, plus a bottom-nav shell. Deep links must keep working.",
+    "expected_behavior": [
+      "configures ONE `GoRouter` passed to `MaterialApp.router(routerConfig:)`",
+      "centralizes auth gating in the router `redirect` plus a `refreshListenable` tied to auth state",
+      "navigates with typed routes / route objects, not scattered auth checks in widgets"
+    ],
+    "anti_behaviors": [
+      "scatters auth checks inside individual widgets instead of the router redirect",
+      "sets a fixed `initialLocation` that clobbers an incoming deep link",
+      "creates a second router / mixes Navigator 1.0 with go_router"
+    ]
+  },
+  {
+    "id": "networking-dio-release-logging",
+    "skill": "flutter:networking",
+    "query": "Set up a dio-based API client for my app with a Bearer auth header and request logging. Base URL is https://api.example.com.",
+    "expected_behavior": [
+      "builds ONE configured `Dio` instance injected via DI, not `Dio()` per request",
+      "adds the auth Bearer token in an interceptor `onRequest`, not inline at each call site",
+      "guards `LogInterceptor` with `kDebugMode` so bodies/tokens are not logged in release"
+    ],
+    "anti_behaviors": [
+      "constructs `Dio()` per request instead of reusing one instance",
+      "hardcodes an API key or secret token literal in the client source",
+      "enables `LogInterceptor` unconditionally (dumps auth headers in release)"
+    ]
+  },
+  {
+    "id": "persistence-package-choice",
+    "skill": "flutter:persistence",
+    "query": "I need to store a few hundred structured records (notes: id, title, body, updatedAt) locally in my Flutter app, with queries and schema migrations across app updates. Recommend a package and set it up.",
+    "expected_behavior": [
+      "recommends a MAINTAINED package — `drift` or `hive_ce` (or `sqflite`) — as the primary choice",
+      "defines a `schemaVersion` and an `onUpgrade` / migration path for app updates",
+      "does NOT use `SharedPreferences` as the database for the record list"
+    ],
+    "anti_behaviors": [
+      "recommends `Isar` (abandoned) or the classic `hive`/`Hive` (unmaintained) as the primary store",
+      "uses `SharedPreferences` to persist the structured record list",
+      "ignores migrations entirely (no schemaVersion / onUpgrade)"
+    ]
+  },
+  {
+    "id": "flavors-env-appflavor",
+    "skill": "flutter:flavors-env",
+    "query": "Set up dev / staging / prod build flavors for my Flutter app, each pointing at a different API base URL, readable at runtime.",
+    "expected_behavior": [
+      "reads the active flavor via the official `appFlavor` constant and/or `--dart-define-from-file`",
+      "configures BOTH Android product flavors AND iOS schemes/xcconfig, not Android only",
+      "keeps real secrets out of committed `.env`/asset files (treats bundled config as non-secret)"
+    ],
+    "anti_behaviors": [
+      "relies on `String.fromEnvironment('FLAVOR')` as the flavor source",
+      "sets up Android flavors but omits the iOS scheme / xcconfig side",
+      "ships secrets in a bundled `.env` or asset as plaintext"
+    ]
+  },
+  {
+    "id": "push-fcm-background-handler",
+    "skill": "flutter:push-notifications",
+    "query": "Add Firebase Cloud Messaging to my Flutter app, including handling notifications when the app is in the background or terminated.",
+    "expected_behavior": [
+      "annotates the background message handler with `@pragma('vm:entry-point')`",
+      "registers a TOP-LEVEL (not closure/anonymous) function via `FirebaseMessaging.onBackgroundMessage`",
+      "requests notification permission (Android 13+ POST_NOTIFICATIONS / iOS authorization)"
+    ],
+    "anti_behaviors": [
+      "omits `@pragma('vm:entry-point')` on the background handler (tree-shaken in release)",
+      "uses an inline closure as the background handler instead of a top-level function",
+      "assumes notifications display automatically with no permission request"
+    ]
+  },
+  {
+    "id": "security-token-storage",
+    "skill": "flutter:security",
+    "query": "Where and how should I store the user's auth token in my Flutter app? Also I want to pin my server's TLS certificate. Show the setup.",
+    "expected_behavior": [
+      "stores the token in `flutter_secure_storage` (Keychain/Keystore), not SharedPreferences/plaintext",
+      "implements certificate pinning IN DART (e.g. dio/`SecurityContext`/badCertificate check), noting Flutter ignores the OS trust store",
+      "does not treat an app-bundled API key as a real secret (notes it is extractable)"
+    ],
+    "anti_behaviors": [
+      "stores the auth token in `SharedPreferences` or a plaintext file",
+      "sets `badCertificateCallback => true` (disabling TLS validation instead of pinning)",
+      "hardcodes a real secret/API key in Dart source as if it were secure"
+    ]
+  }
+]

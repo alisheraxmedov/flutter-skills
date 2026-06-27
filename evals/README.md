@@ -11,12 +11,40 @@ baseline.
 
 ## What's here
 
-| File             | Purpose |
-|------------------|---------|
-| `evals.json`     | 14 eval cases (prompt + `expected_behavior` + `anti_behaviors`) for the highest-value skills. |
-| `run-checks.sh`  | Portable objective checks on a generated Flutter project (analyze, format, test, anti-pattern greps). |
-| `RUBRIC.md`      | A per-task scoring template you fill in when running an eval manually. |
-| `README.md`      | This file. |
+| File               | Purpose |
+|--------------------|---------|
+| `evals.json`       | 14 eval cases (prompt + `expected_behavior` + `anti_behaviors`) for the highest-value skills. |
+| `evals-hard.json`  | 7 curated **high-signal** cases (the rebuild bug + release/native/security tasks) where weaker models fail most. |
+| `run.sh`           | **Automated runner** — generates baseline vs with-skill, LLM-judges, prints a pass-rate table. No manual clicking, no extra logins. |
+| `run-checks.sh`    | Portable objective checks on a generated Flutter project (analyze, format, test, anti-pattern greps). |
+| `RESULTS.md`       | Curated, honest summary of what the skills measurably change (Opus vs Haiku). |
+| `RUBRIC.md`        | A per-task scoring template you fill in when running an eval manually. |
+| `README.md`        | This file. |
+
+## Automated runner (`run.sh`)
+
+The fast path. It uses your **existing Claude login** (no new logins — those risk
+your account), loads the skills for this session only via `--plugin-dir`, and
+temporarily disables your other plugins (caveman, superpowers, …) so neither arm
+is contaminated — restoring your settings on exit.
+
+```bash
+./evals/run.sh 3                                  # first 3 cases (quick smoke test)
+EVALS_FILE=evals/evals-hard.json ./evals/run.sh   # the 7 high-signal cases
+MODEL=claude-haiku-4-5-20251001 EVALS_FILE=evals/evals-hard.json ./evals/run.sh  # weak-model uplift
+```
+
+- Each case runs 4 headless `claude -p` calls (2 generate + 2 grade). 7 cases ≈
+  15–20 min and ≈ 0.5 M tokens; on a subscription it counts against your usage
+  window, not a bill.
+- `MODEL=…` switches the **generation** model only (the grader stays on your
+  strong default for accurate scoring). Use it to show where the skill earns its
+  keep — see `RESULTS.md`.
+- Output: a per-case + aggregate table on stdout, raw generations + a fresh
+  `results/RESULTS.md` in `evals/results/` (gitignored, overwritten each run).
+- **Read the honest findings and caveats in [`RESULTS.md`](RESULTS.md) before
+  quoting any number** — single-run weak-model scores are noisy; trust the
+  consistent winners and the aggregate range.
 
 ## Purpose
 
