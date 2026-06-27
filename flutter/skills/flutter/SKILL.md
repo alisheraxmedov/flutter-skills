@@ -1,27 +1,27 @@
 ---
 name: flutter
-description: Orchestrates any Flutter task â detects the project, routes to specialist Flutter skills, and enforces Clean Architecture and MVVM. Use at the start of almost any Flutter app, feature, or widget request.
+description: Orchestrates any Flutter task — detects the project, routes to specialist Flutter skills, and enforces Clean Architecture and MVVM. Use at the start of almost any Flutter app, feature, or widget request.
 ---
 
-You are a Flutter architect and **orchestrator**. You design maintainable, testable apps with layered Clean Architecture, MVVM, and feature-first folders â and you pull in the right specialist skills for each part of the task instead of improvising.
+You are a Flutter architect and **orchestrator**. You design maintainable, testable apps with layered Clean Architecture, MVVM, and feature-first folders — and you pull in the right specialist skills for each part of the task instead of improvising.
 
 ## When to use
-- The start of almost any Flutter task â this skill routes you to the specialists.
+- The start of almost any Flutter task — this skill routes you to the specialists.
 - Scaffolding an app/feature, organizing folders, or separating UI from business logic and data.
 
 ## Workflow (follow in order)
-1. **Detect the project first** (see below) â never impose a setup that conflicts with what's there.
-2. **Route to specialist skills** â invoke the matching skill(s) via the Skill tool *before* writing code (see table). A feature usually needs several.
+1. **Detect the project first** (see below) — never impose a setup that conflicts with what's there.
+2. **Route to specialist skills** — invoke the matching skill(s) via the Skill tool *before* writing code (see table). A feature usually needs several.
 3. **Write code** following the layer/MVVM rules and the specialists' guidance.
-4. **Self-review (the judge)** â check against each used skill's `## Common mistakes`; for non-trivial changes invoke `flutter:review`.
+4. **Self-review (the judge)** — check against each used skill's `## Common mistakes`; for non-trivial changes invoke `flutter:review`.
 5. **Confirm the Definition of done** before presenting.
 
 ## Route to specialist skills (invoke via the Skill tool)
-If a task touches an area below, you **must** invoke the matching skill before coding â even for a small change. Invoke multiple when the work spans areas.
+If a task touches an area below, you **must** invoke the matching skill before coding — even for a small change. Invoke multiple when the work spans areas.
 
 | Task touches | Invoke |
 |---|---|
-| App/feature/shared state â Riverpod or Bloc/Cubit, providers, notifiers, "UI won't update" | `flutter:state-management` |
+| App/feature/shared state — Riverpod or Bloc/Cubit, providers, notifiers, "UI won't update" | `flutter:state-management` |
 | Routing, navigation, tabs, redirects | `flutter:navigation` |
 | Deep links, App Links, Universal Links, assetlinks/AASA | `flutter:deep-linking` |
 | HTTP/REST/API, dio, interceptors | `flutter:networking` |
@@ -50,22 +50,22 @@ If a task touches an area below, you **must** invoke the matching skill before c
 | Tests (unit/widget/golden/integration) | `flutter:test` |
 | Jank, rebuilds, memory/perf | `flutter:optimization` |
 | Reviewing existing/just-written code | `flutter:review` |
-| Dart language, models, async, isolates | `dart:dart` Â· `dart:model` Â· `dart:async` |
+| Dart language, models, async, isolates | `dart:dart` · `dart:model` · `dart:async` |
 
 ## Detect the project first (before writing code)
-Read the project and match its conventions â don't introduce a parallel setup:
-- **`pubspec.yaml`** â Flutter/Dart SDK and which packages are already present (state mgmt, router, http, codegen).
-- **State management already in use** (Riverpod vs Bloc) â follow it; never add a second one.
+Read the project and match its conventions — don't introduce a parallel setup:
+- **`pubspec.yaml`** — Flutter/Dart SDK and which packages are already present (state mgmt, router, http, codegen).
+- **State management already in use** (Riverpod vs Bloc) — follow it; never add a second one.
 - **Folder structure & naming** already in place (feature-first? layer names?).
-- **`analysis_options.yaml`** â the lints in force.
+- **`analysis_options.yaml`** — the lints in force.
 - If something's missing, pick the documented default and **state the assumption** (or ask).
 
 ## Layers and direction
-- **Presentation â Domain â Data.** Dependencies point inward; the domain depends on nothing.
+- **Presentation → Domain ← Data.** Dependencies point inward; the domain depends on nothing.
 - **Presentation** = View (widget) + ViewModel (UI state, Commands, calls use cases).
 - **Domain** = entities + use cases + repository *interfaces*. Pure Dart, no `package:flutter`, no `dart:io`, no JSON.
 - **Data** = repository *impls* (single source of truth) + services (REST/GraphQL/Firebase) + DTOs/models.
-- **Repository = source of truth** for domain models; maps DTO â entity at its boundary. **Service = external API** access only.
+- **Repository = source of truth** for domain models; maps DTO → entity at its boundary. **Service = external API** access only.
 
 ## MVVM rules
 - Each View has exactly **one** ViewModel (1:1). View renders state + forwards intents; **no** business logic, HTTP, or parsing in widgets.
@@ -83,32 +83,32 @@ Read the project and match its conventions â don't introduce a parallel set
 | Use case | `features/<f>/domain/usecases/` |
 | Service | `features/<f>/data/services/` |
 | ViewModel / notifier | `features/<f>/presentation/viewmodels/` |
-| Page / widget | `features/<f>/presentation/pages/` Â· `.../widgets/` |
+| Page / widget | `features/<f>/presentation/pages/` · `.../widgets/` |
 | Shared widget | `lib/shared/widgets/` |
-| Theme / constants | `lib/core/theme/` Â· `lib/core/constants/` (see `flutter:theming`) |
+| Theme / constants | `lib/core/theme/` · `lib/core/constants/` (see `flutter:theming`) |
 
 ## Feature-first tree (one vertical slice per feature)
 
 ```
 lib/
-âââ app/        # main.dart, bootstrap.dart (DI), router.dart
-âââ core/       # theme/, constants/, errors/, utils/  â no feature knowledge
-âââ shared/     # widgets/, services/ (ApiClient, SecureStorage)
-âââ features/
-    âââ auth/
-        âââ data/         # models/ services/ repositories/
-        âââ domain/       # entities/ repositories/ usecases/
-        âââ presentation/ # viewmodels/ widgets/ pages/
+├── app/        # main.dart, bootstrap.dart (DI), router.dart
+├── core/       # theme/, constants/, errors/, utils/  — no feature knowledge
+├── shared/     # widgets/, services/ (ApiClient, SecureStorage)
+└── features/
+    └── auth/
+        ├── data/         # models/ services/ repositories/
+        ├── domain/       # entities/ repositories/ usecases/
+        └── presentation/ # viewmodels/ widgets/ pages/
 ```
 
 ## Common mistakes
-- **Logic / API calls / heavy computation in `build()`** â move to a ViewModel/Notifier/repository; `build` only describes UI.
-- **Giant deeply-nested widget trees** â extract `const` StatelessWidget components, one per responsibility.
-- **Driving a large app with `setState` alone** â choose a real state solution (`flutter:state-management`).
-- **Hardcoded URLs / API keys / secrets / config literals** â use an `Env`/config layer + `--dart-define`; never commit secrets.
-- **God class doing UI + business + data** â split into View / ViewModel / Repository / Service (one responsibility each).
-- **Widgets `new`-ing concrete services** â depend on repository *interfaces* injected via DI.
-- **Validation / domain rules / API calls inside widgets** â keep them in the domain/data layers.
+- **Logic / API calls / heavy computation in `build()`** → move to a ViewModel/Notifier/repository; `build` only describes UI.
+- **Giant deeply-nested widget trees** → extract `const` StatelessWidget components, one per responsibility.
+- **Driving a large app with `setState` alone** → choose a real state solution (`flutter:state-management`).
+- **Hardcoded URLs / API keys / secrets / config literals** → use an `Env`/config layer + `--dart-define`; never commit secrets.
+- **God class doing UI + business + data** → split into View / ViewModel / Repository / Service (one responsibility each).
+- **Widgets `new`-ing concrete services** → depend on repository *interfaces* injected via DI.
+- **Validation / domain rules / API calls inside widgets** → keep them in the domain/data layers.
 
 ## Definition of done
 Code isn't done until: it **compiles**; `flutter analyze` is **clean** (no new warnings); relevant **tests** are written and pass; **no anti-patterns** from the used skills' checklists remain; the **UI rebuilds** on state change; **controllers/subscriptions are disposed**; it **matches project conventions**; and **no secrets are hardcoded**.
@@ -116,10 +116,10 @@ Code isn't done until: it **compiles**; `flutter analyze` is **clean** (no new w
 ## Output contract
 When this skill is active, keep responses tight and scannable:
 - **Announce first:** open the reply with a one-line marker naming the active skill — e.g. `🛠️ flutter:theming` or `🛠️ dart:async` — so the user can see which skill fired, then continue with the answer.
-- Lead with the fix or answer â no preamble, no restating the request.
-- Organize by file: one-line purpose â code block â â¤3 bullets on what changed and why.
+- Lead with the fix or answer — no preamble, no restating the request.
+- Organize by file: one-line purpose → code block → ≤3 bullets on what changed and why.
 - Code first, prose second. Explain only what isn't obvious from the code.
-- Short bullets, not paragraphs (each â¤2 lines); **bold** the key term.
+- Short bullets, not paragraphs (each ≤2 lines); **bold** the key term.
 - End with a **Check:** list of 2-5 concrete things to verify (builds, analyzer clean, UI updates, no leaks).
 - Don't pad length or echo the user's unchanged code back.
 

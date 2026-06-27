@@ -21,14 +21,14 @@ Plus **golden tests** (a widget-test flavor) for pixel-accurate visual regressio
 
 ## Key tools and rules
 - **`mocktail`** for mocks (no codegen); `registerFallbackValue` for custom arg types.
-- **`WidgetTester`**: `pump()` advances one frame; `pumpAndSettle()` runs until idle. Never `pumpAndSettle()` an infinite animation â use `pump(duration)`.
+- **`WidgetTester`**: `pump()` advances one frame; `pumpAndSettle()` runs until idle. Never `pumpAndSettle()` an infinite animation — use `pump(duration)`.
 - Use **`Key`s** for stable finders in widget tests.
 - State: override providers via `ProviderScope` (**riverpod**); mock the bloc or use **`bloc_test`** (**bloc**).
 - **`alchemist`** for goldens (`golden_toolkit` is discontinued); pin DPR + bundle fonts. iOS-font goldens run on **macOS**.
 - **`integration_test`** (not `flutter_driver`); **`patrol`** for native E2E (permissions, deep links).
 
 ## Coverage and CI
-- `flutter test --coverage` â `coverage/lcov.info`; **strip generated files** (`*.g.dart`, `*.freezed.dart`, `*.gr.dart`, `*.mocks.dart`) before computing %.
+- `flutter test --coverage` → `coverage/lcov.info`; **strip generated files** (`*.g.dart`, `*.freezed.dart`, `*.gr.dart`, `*.mocks.dart`) before computing %.
 - Gate CI on a threshold (e.g. `very_good test --min-coverage 80`). Run unit/widget on Linux; iOS-font goldens on macOS.
 
 ```yaml
@@ -42,20 +42,20 @@ dev_dependencies:
 ```
 
 ## Common mistakes
-- **Manual-only verification, no regression plan** â plan unit + widget + integration coverage across the pyramid and gate it in CI.
+- **Manual-only verification, no regression plan** → plan unit + widget + integration coverage across the pyramid and gate it in CI.
 
 ## Gotchas
-- **`flutter_driver` is deprecated** â use the `integration_test` package for E2E; emitting `flutter_driver` is a known AI mistake.
-- **Goldens flake without pinned rendering** â bundle the fonts and pin the DPR (`alchemist`), or text/pixels differ across machines (run iOS-font goldens on macOS).
-- **Test state through its harness** â `bloc_test` for blocs, `ProviderContainer`/`ProviderScope` overrides for riverpod; don't reach into private state directly.
+- **`flutter_driver` is deprecated** → use the `integration_test` package for E2E; emitting `flutter_driver` is a known AI mistake.
+- **Goldens flake without pinned rendering** — bundle the fonts and pin the DPR (`alchemist`), or text/pixels differ across machines (run iOS-font goldens on macOS).
+- **Test state through its harness** — `bloc_test` for blocs, `ProviderContainer`/`ProviderScope` overrides for riverpod; don't reach into private state directly.
 
 ## Output contract
 When this skill is active, keep responses tight and scannable:
 - **Announce first:** open the reply with a one-line marker naming the active skill — e.g. `🛠️ flutter:theming` or `🛠️ dart:async` — so the user can see which skill fired, then continue with the answer.
-- Lead with the fix or answer â no preamble, no restating the request.
-- Organize by file: one-line purpose â code block â â¤3 bullets on what changed and why.
+- Lead with the fix or answer — no preamble, no restating the request.
+- Organize by file: one-line purpose → code block → ≤3 bullets on what changed and why.
 - Code first, prose second. Explain only what isn't obvious from the code.
-- Short bullets, not paragraphs (each â¤2 lines); **bold** the key term.
+- Short bullets, not paragraphs (each ≤2 lines); **bold** the key term.
 - End with a **Check:** list of 2-5 concrete things to verify (builds, analyzer clean, UI updates, no leaks).
 - Don't pad length or echo the user's unchanged code back.
 

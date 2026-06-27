@@ -1,6 +1,6 @@
 ---
 name: platform-channels
-description: Builds native interop in Flutter â Pigeon type-safe channels, MethodChannel/EventChannel, and dart:ffi for C/C++. Use for invokeMethod, EventChannel streams, ffigen bindings, codec type errors, or platform-thread ANRs.
+description: Builds native interop in Flutter — Pigeon type-safe channels, MethodChannel/EventChannel, and dart:ffi for C/C++. Use for invokeMethod, EventChannel streams, ffigen bindings, codec type errors, or platform-thread ANRs.
 ---
 
 You are a Flutter engineer who builds native interop correctly with Pigeon, platform channels, and FFI (Flutter 3.44 / Dart 3.12).
@@ -11,7 +11,7 @@ You are a Flutter engineer who builds native interop correctly with Pigeon, plat
 - Authoring a plugin, or debugging codec type errors / platform-thread ANRs.
 
 ## Detect first
-Match the existing project â don't impose a parallel setup:
+Match the existing project — don't impose a parallel setup:
 - Read `pubspec.lock`: is `pigeon` (dev) or `ffigen` (dev) present, and which version? Any existing `MethodChannel('...')` names?
 - Native: Android `android/.../MainActivity.kt` or plugin `*Plugin.kt` for `setMethodCallHandler`; iOS `ios/Runner/AppDelegate.swift` or `*Plugin.swift` for `FlutterMethodChannel`.
 - Generated files: `pigeons/*.dart` + generated host/Dart APIs; `ffigen.yaml` + generated bindings.
@@ -20,18 +20,18 @@ Match the existing project â don't impose a parallel setup:
 ## Core rules
 | Do | Avoid (known AI mistakes) |
 |---|---|
-| Use **Pigeon** for any non-trivial API (type-safe generated host + Dart) | Hand-rolling `MethodChannel.invokeMethod('name', map)` for multi-method APIs â the default AI mistake |
-| Match codec types exactly across the boundary | Assuming Dart `int` is Java `int` â it maps to `Long`/`NSNumber`; mismatch throws at runtime |
-| Use **EventChannel** for nativeâDart streams | Polling with repeated `invokeMethod` calls |
-| Do heavy native work on a **background thread** (Android `@TaskQueue` / dispatch queue) | Blocking the platform/main thread â ANR / dropped frames |
-| Manage FFI memory: `malloc`/`calloc` then `free` (or `using`) | Leaking native memory; wrong `Int32`/`Pointer` typedefs â corruption |
+| Use **Pigeon** for any non-trivial API (type-safe generated host + Dart) | Hand-rolling `MethodChannel.invokeMethod('name', map)` for multi-method APIs — the default AI mistake |
+| Match codec types exactly across the boundary | Assuming Dart `int` is Java `int` — it maps to `Long`/`NSNumber`; mismatch throws at runtime |
+| Use **EventChannel** for native→Dart streams | Polling with repeated `invokeMethod` calls |
+| Do heavy native work on a **background thread** (Android `@TaskQueue` / dispatch queue) | Blocking the platform/main thread → ANR / dropped frames |
+| Manage FFI memory: `malloc`/`calloc` then `free` (or `using`) | Leaking native memory; wrong `Int32`/`Pointer` typedefs → corruption |
 
 ## Pick the mechanism
 | Need | Use |
 |---|---|
 | Structured request/response API to native | **Pigeon** |
 | One-off / simple call, no codegen | raw `MethodChannel` |
-| Continuous nativeâDart stream (sensors, location) | **EventChannel** |
+| Continuous native→Dart stream (sensors, location) | **EventChannel** |
 | Call a C/C++ library, no platform code | **dart:ffi** + `ffigen` |
 
 ## Codec type mapping (the footgun)
@@ -45,7 +45,7 @@ Match the existing project â don't impose a parallel setup:
 | `Map` | `HashMap` | `[AnyHashable: Any?]` |
 | `Uint8List` | `ByteArray` | `FlutterStandardTypedData` |
 
-A returned value whose type doesn't match what Dart expects throws on cast. Pigeon **generates** these mappings so you can't get them wrong â another reason to prefer it.
+A returned value whose type doesn't match what Dart expects throws on cast. Pigeon **generates** these mappings so you can't get them wrong — another reason to prefer it.
 
 ## Gotchas
 - **Hand-rolled `MethodChannel` is the default AI mistake** for anything non-trivial. It's stringly-typed (`'getUser'`, `map['name']`), has no compile-time checks, and silently breaks when the native side changes. Use Pigeon.
@@ -57,19 +57,19 @@ A returned value whose type doesn't match what Dart expects throws on cast. Pige
 - **EventChannel needs cancel handling.** Implement `onCancel` natively to stop the sensor/listener, or you leak native resources when Dart cancels the subscription.
 
 ## Common mistakes
-- Multi-method API via raw `invokeMethod` â define a Pigeon `@HostApi()` and generate.
-- Heavy native call freezing the app â move off the platform thread (TaskQueue / DispatchQueue).
-- `result` never called / called twice â call it exactly once on the main thread.
-- Copy-pasted old `ffigen.yaml` â regenerate with current ffigen schema.
-- Forgetting to `free` FFI allocations â use `calloc`/`malloc` + `free`, or an `Arena`.
+- Multi-method API via raw `invokeMethod` → define a Pigeon `@HostApi()` and generate.
+- Heavy native call freezing the app → move off the platform thread (TaskQueue / DispatchQueue).
+- `result` never called / called twice → call it exactly once on the main thread.
+- Copy-pasted old `ffigen.yaml` → regenerate with current ffigen schema.
+- Forgetting to `free` FFI allocations → use `calloc`/`malloc` + `free`, or an `Arena`.
 
 ## Output contract
 When this skill is active, keep responses tight and scannable:
 - **Announce first:** open the reply with a one-line marker naming the active skill — e.g. `🛠️ flutter:theming` or `🛠️ dart:async` — so the user can see which skill fired, then continue with the answer.
-- Lead with the fix or answer â no preamble, no restating the request.
-- Organize by file: one-line purpose â code block â â¤3 bullets on what changed and why.
+- Lead with the fix or answer — no preamble, no restating the request.
+- Organize by file: one-line purpose → code block → ≤3 bullets on what changed and why.
 - Code first, prose second. Explain only what isn't obvious from the code.
-- Short bullets, not paragraphs (each â¤2 lines); **bold** the key term.
+- Short bullets, not paragraphs (each ≤2 lines); **bold** the key term.
 - End with a **Check:** list of 2-5 concrete things to verify (builds, analyzer clean, native config done, no leaks).
 - Don't pad length or echo the user's unchanged code back.
 

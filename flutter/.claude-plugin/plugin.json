@@ -1,7 +1,7 @@
 {
   "name": "flutter",
   "description": "Flutter skills with an orchestrator entry point: Clean Architecture, Riverpod & BLoC state management, go_router navigation, dio networking, theming, forms, animation, responsive UI, i18n, error handling, testing, performance optimization, and code review",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "author": {
     "name": "alisherakhmedov",
     "email": "alisheraxmedov4x4@gmail.com"

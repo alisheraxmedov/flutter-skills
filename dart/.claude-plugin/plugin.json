@@ -1,7 +1,7 @@
 {
   "name": "dart",
   "description": "Dart code-quality skills: idiomatic Dart 3, async/streams/isolates, data models, static analysis, testing, optimization",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "author": {
     "name": "alisherakhmedov",
     "email": "alisheraxmedov4x4@gmail.com"

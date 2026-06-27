@@ -34,25 +34,25 @@ Prefer implicit for simple state transitions. Reach for explicit only when you n
 - Keep `builder` callbacks tiny; do setup in `initState`, not per tick.
 
 ## Prebuilt packages
-- **flutter_animate** â chainable: `w.animate().fadeIn(duration: 300.ms).slideY(begin: 0.2)`.
-- **lottie** â After Effects JSON: `Lottie.asset('assets/success.json')`.
+- **flutter_animate** — chainable: `w.animate().fadeIn(duration: 300.ms).slideY(begin: 0.2)`.
+- **lottie** — After Effects JSON: `Lottie.asset('assets/success.json')`.
 
 ## Common mistakes
-- `AnimationController` created in `build`, or never disposed â create once in `initState` with `vsync`, `dispose()` it.
-- Rebuilding the animated subtree every tick â pass the static child to `AnimatedBuilder`'s `child` param and reuse it in the builder.
+- `AnimationController` created in `build`, or never disposed → create once in `initState` with `vsync`, `dispose()` it.
+- Rebuilding the animated subtree every tick → pass the static child to `AnimatedBuilder`'s `child` param and reuse it in the builder.
 
 ## Gotchas
-- **Always `dispose()` the `AnimationController`** â create it in `initState` with a `vsync`; leaving it undisposed leaks the ticker.
-- **Pass the static subtree to `AnimatedBuilder`'s `child`** and reuse it in the builder â otherwise the whole subtree rebuilds every frame.
-- **Prefer implicit animations for simple cases** (`AnimatedContainer`/`AnimatedOpacity`) â reaching for an explicit controller for a one-shot tween is over-engineering.
+- **Always `dispose()` the `AnimationController`** — create it in `initState` with a `vsync`; leaving it undisposed leaks the ticker.
+- **Pass the static subtree to `AnimatedBuilder`'s `child`** and reuse it in the builder — otherwise the whole subtree rebuilds every frame.
+- **Prefer implicit animations for simple cases** (`AnimatedContainer`/`AnimatedOpacity`) — reaching for an explicit controller for a one-shot tween is over-engineering.
 
 ## Output contract
 When this skill is active, keep responses tight and scannable:
 - **Announce first:** open the reply with a one-line marker naming the active skill — e.g. `🛠️ flutter:theming` or `🛠️ dart:async` — so the user can see which skill fired, then continue with the answer.
-- Lead with the fix or answer â no preamble, no restating the request.
-- Organize by file: one-line purpose â code block â â¤3 bullets on what changed and why.
+- Lead with the fix or answer — no preamble, no restating the request.
+- Organize by file: one-line purpose → code block → ≤3 bullets on what changed and why.
 - Code first, prose second. Explain only what isn't obvious from the code.
-- Short bullets, not paragraphs (each â¤2 lines); **bold** the key term.
+- Short bullets, not paragraphs (each ≤2 lines); **bold** the key term.
 - End with a **Check:** list of 2-5 concrete things to verify (builds, analyzer clean, works across sizes/locales, no leaks).
 - Don't pad length or echo the user's unchanged code back.
 

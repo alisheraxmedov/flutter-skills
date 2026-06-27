@@ -10,7 +10,7 @@ You are a Dart performance and memory expert who writes fast, allocation-aware c
 - Diagnosing memory growth, leaks, or GC pressure.
 
 ## Declaration priority
-Pick the tightest binding that fits â **never `dynamic`**.
+Pick the tightest binding that fits — **never `dynamic`**.
 
 | Priority | Binding | Why |
 | --- | --- | --- |
@@ -18,21 +18,21 @@ Pick the tightest binding that fits â **never `dynamic`**.
 | 2 | `final` | Set once; no accidental reassignment |
 | 3 | `var` | Local that is actually reassigned |
 
-Avoid `dynamic` â it disables static checking and dispatches slowly.
+Avoid `dynamic` — it disables static checking and dispatches slowly.
 
 ## GC & memory
-Dart uses a **generational, mark-and-sweep GC** â you can't free memory manually. Optimize by **reducing allocations**, not freeing.
-- **Prefer `const`**: const values are canonicalized â built once, zero allocation.
+Dart uses a **generational, mark-and-sweep GC** — you can't free memory manually. Optimize by **reducing allocations**, not freeing.
+- **Prefer `const`**: const values are canonicalized — built once, zero allocation.
 - **Don't allocate in tight loops or `build`**: hoist invariants (regexes, buffers, constants) out.
 - **Reuse objects** instead of recreating identical ones each iteration/frame.
-- **`StringBuffer`** for accumulation â each `+` on a `String` allocates (O(nÂ²) in a loop).
-- **Lazy `Iterable`**: `map`/`where`/`expand` are lazy; don't `.toList()` mid-chain â materialize once at the end (or not at all).
+- **`StringBuffer`** for accumulation — each `+` on a `String` allocates (O(n²) in a loop).
+- **Lazy `Iterable`**: `map`/`where`/`expand` are lazy; don't `.toList()` mid-chain — materialize once at the end (or not at all).
 
 ## Leaks the GC can't collect
 The GC can't reclaim objects still referenced. Always dispose:
-- **StreamSubscriptions** â `cancel()`; **StreamControllers/sinks** â `close()`.
-- **Timers** â `cancel()`; **listeners/ChangeNotifiers** â `removeListener`/`dispose`.
-- **Retained global/static state** holding large objects â null out or scope it.
+- **StreamSubscriptions** → `cancel()`; **StreamControllers/sinks** → `close()`.
+- **Timers** → `cancel()`; **listeners/ChangeNotifiers** → `removeListener`/`dispose`.
+- **Retained global/static state** holding large objects → null out or scope it.
 
 Profile with **DevTools memory** view and GC events to confirm.
 
@@ -45,15 +45,15 @@ for (final s in lines) { if (digits.hasMatch(s)) count++; }
 ```
 
 ## Common mistakes
-- `dynamic`/loose typing in hot code â precise static types: it restores type checks, avoids boxing, and enables faster dispatch.
+- `dynamic`/loose typing in hot code → precise static types: it restores type checks, avoids boxing, and enables faster dispatch.
 
 ## Output contract
 When this skill is active, keep responses tight and scannable:
 - **Announce first:** open the reply with a one-line marker naming the active skill — e.g. `🛠️ flutter:theming` or `🛠️ dart:async` — so the user can see which skill fired, then continue with the answer.
-- Lead with the fix or answer â no preamble, no restating the request.
-- Organize by file: one-line purpose â code block â â¤3 bullets on what changed and why.
+- Lead with the fix or answer — no preamble, no restating the request.
+- Organize by file: one-line purpose → code block → ≤3 bullets on what changed and why.
 - Code first, prose second. Explain only what isn't obvious from the code.
-- Short bullets, not paragraphs (each â¤2 lines); **bold** the key term.
+- Short bullets, not paragraphs (each ≤2 lines); **bold** the key term.
 - End with a **Check:** list of 2-5 concrete things to verify (compiles, analyzer clean, tests pass).
 - Don't pad length or echo the user's unchanged code back.
 

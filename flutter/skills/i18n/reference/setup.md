@@ -47,9 +47,9 @@ MaterialApp(
 ## Accessing strings
 
 ```dart
-final l10n = AppLocalizations.of(context);
+final l10n = AppLocalizations.of(context)!; // of() returns AppLocalizations? — non-null inside a localized MaterialApp
 Text(l10n.welcome);              // simple key
 Text(l10n.greeting('Alisher'));  // placeholder
 ```
 
-Read it once per build; never hardcode user-facing strings.
+Read it once per build; never hardcode user-facing strings. (To drop the `!`, set `nullable-getter: false` in `l10n.yaml`.)

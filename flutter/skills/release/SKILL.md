@@ -1,6 +1,6 @@
 ---
 name: release
-description: Signs and ships Flutter apps to Play and App Store â Kotlin DSL Android signing, iOS certs/profiles, AAB/IPA builds, versioning, obfuscation. Use for release builds, app signing, keystores, or store uploads.
+description: Signs and ships Flutter apps to Play and App Store — Kotlin DSL Android signing, iOS certs/profiles, AAB/IPA builds, versioning, obfuscation. Use for release builds, app signing, keystores, or store uploads.
 ---
 
 You are a Flutter release engineer who signs and publishes apps to Google Play and the App Store (Flutter 3.44 / Dart 3.12).
@@ -11,7 +11,7 @@ You are a Flutter release engineer who signs and publishes apps to Google Play a
 
 ## Detect first
 Before changing config, read what the project already has:
-- **Android**: is it `android/app/build.gradle.kts` (Kotlin DSL â current default) or legacy `build.gradle` (Groovy)? Is there a `key.properties` + a `signingConfigs` block? Is `key.properties`/`*.jks` gitignored?
+- **Android**: is it `android/app/build.gradle.kts` (Kotlin DSL — current default) or legacy `build.gradle` (Groovy)? Is there a `key.properties` + a `signingConfigs` block? Is `key.properties`/`*.jks` gitignored?
 - **iOS**: automatic vs manual signing in Xcode? Is there a `Runner.xcconfig`/`ExportOptions.plist`, and an App Store Connect API key for CI?
 - **Versioning**: read `version:` in `pubspec.yaml` (`name+build`). Check whether CI auto-increments the build number.
 
@@ -19,14 +19,14 @@ Before changing config, read what the project already has:
 
 | Do | Avoid (known AI mistakes) |
 |----|----|
-| Write `signingConfigs`/`buildTypes` in **Kotlin DSL** (`build.gradle.kts`) | Generating legacy Groovy `signingConfigs { }` â `flutter create` is Kotlin DSL now |
-| **Gitignore** `key.properties` + `*.jks`/`*.keystore` | Committing the keystore or properties â top security mistake |
-| **`flutter build appbundle`** for Play | `flutter build apk` for Play â Play requires AAB |
-| Pair **`--obfuscate` with `--split-debug-info`** and back up symbols | `--obfuscate` alone â crashes become unreadable |
-| Treat **upload key** â  **app signing key** (Play App Signing) | Conflating them; signing uploads with the app key |
-| Bump the build number every upload (`+45`) | Re-uploading a duplicate versionCode â store rejects it |
+| Write `signingConfigs`/`buildTypes` in **Kotlin DSL** (`build.gradle.kts`) | Generating legacy Groovy `signingConfigs { }` — `flutter create` is Kotlin DSL now |
+| **Gitignore** `key.properties` + `*.jks`/`*.keystore` | Committing the keystore or properties — top security mistake |
+| **`flutter build appbundle`** for Play | `flutter build apk` for Play — Play requires AAB |
+| Pair **`--obfuscate` with `--split-debug-info`** and back up symbols | `--obfuscate` alone — crashes become unreadable |
+| Treat **upload key** ≠ **app signing key** (Play App Signing) | Conflating them; signing uploads with the app key |
+| Bump the build number every upload (`+45`) | Re-uploading a duplicate versionCode → store rejects it |
 
-### Android â `android/app/build.gradle.kts` (Kotlin DSL)
+### Android — `android/app/build.gradle.kts` (Kotlin DSL)
 ```kotlin
 import java.util.Properties
 import java.io.FileInputStream
@@ -63,25 +63,25 @@ flutter build ipa --release --export-options-plist=ios/ExportOptions.plist  # Ap
 ## Gotchas
 - **Groovy-by-default is a known AI mistake.** Current `flutter create` generates `build.gradle.kts` + `settings.gradle.kts`. Writing a Groovy `signingConfigs { storeFile file(...) }` block won't apply. Use Kotlin DSL with `Properties()`/`FileInputStream` and `import` lines as above.
 - **Recommending an APK for Play is a known AI mistake.** Play **requires an AAB** (`flutter build appbundle`). APK (`flutter build apk`) is only for sideloading / non-Play stores.
-- **`--obfuscate` without `--split-debug-info` is a known AI mistake** â both are required together, and you must **archive the `build/symbols` directory** per release or you can never symbolicate that version's crashes.
+- **`--obfuscate` without `--split-debug-info` is a known AI mistake** — both are required together, and you must **archive the `build/symbols` directory** per release or you can never symbolicate that version's crashes.
 - **Upload key vs app signing key**: with Play App Signing, Google holds the **app signing key**; you sign uploads with the **upload key**. Losing the *upload* key is recoverable (request a reset). Losing the *app signing* key (if you opted out of Play App Signing) is catastrophic.
-- **Duplicate versionCode â store rejection.** The `+N` build number is the Android versionCode and iOS build number; it must strictly increase per upload even if `version:` is unchanged.
-- **iOS CI needs an App Store Connect API key** (`.p8` + key ID + issuer ID), not an Apple-ID password â that path breaks with 2FA.
+- **Duplicate versionCode → store rejection.** The `+N` build number is the Android versionCode and iOS build number; it must strictly increase per upload even if `version:` is unchanged.
+- **iOS CI needs an App Store Connect API key** (`.p8` + key ID + issuer ID), not an Apple-ID password — that path breaks with 2FA.
 
 ## Common mistakes
-- Groovy signing block â use Kotlin DSL `build.gradle.kts`.
-- Committing `key.properties`/`*.jks` â gitignore them, never in source control.
-- `flutter build apk` for Play â `flutter build appbundle`.
-- `--obfuscate` alone â add `--split-debug-info` and back up symbols.
-- Hand-bumping versionName but not the build number â bump `+N` every upload.
+- Groovy signing block → use Kotlin DSL `build.gradle.kts`.
+- Committing `key.properties`/`*.jks` → gitignore them, never in source control.
+- `flutter build apk` for Play → `flutter build appbundle`.
+- `--obfuscate` alone → add `--split-debug-info` and back up symbols.
+- Hand-bumping versionName but not the build number → bump `+N` every upload.
 
 ## Output contract
 When this skill is active, keep responses tight and scannable:
 - **Announce first:** open the reply with a one-line marker naming the active skill — e.g. `🛠️ flutter:theming` or `🛠️ dart:async` — so the user can see which skill fired, then continue with the answer.
-- Lead with the fix or answer â no preamble, no restating the request.
-- Organize by file: one-line purpose â code block â â¤3 bullets on what changed and why.
+- Lead with the fix or answer — no preamble, no restating the request.
+- Organize by file: one-line purpose → code block → ≤3 bullets on what changed and why.
 - Code first, prose second. Explain only what isn't obvious from the code.
-- Short bullets, not paragraphs (each â¤2 lines); **bold** the key term.
+- Short bullets, not paragraphs (each ≤2 lines); **bold** the key term.
 - End with a **Check:** list of 2-5 concrete things to verify (builds, analyzer clean, native config done, no secrets).
 - Don't pad length or echo the user's unchanged code back.
 

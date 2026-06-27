@@ -1,6 +1,7 @@
 {
   "name": "flutter-dart-marketplace",
-  "description": "Flutter va Dart uchun professional kod yozish skilllar to'plami",
+  "version": "3.2.0",
+  "description": "36 production-grade Flutter & Dart skills for Claude Code — Clean Architecture, Riverpod & BLoC, go_router, dio, theming, native interop, security, release & CI — with an orchestrator entry point and an evals harness.",
   "owner": {
     "name": "alisherakhmedov",
     "email": "alisheraxmedov4x4@gmail.com"

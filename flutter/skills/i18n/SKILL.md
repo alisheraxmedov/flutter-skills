@@ -13,8 +13,8 @@ You are a Flutter internationalization specialist who sets up real, generated, t
 ## Setup (essentials)
 1. Deps: `flutter_localizations` (sdk), `intl`; set `flutter: generate: true`.
 2. `l10n.yaml` at project root (`arb-dir`, `template-arb-file`, `output-class`).
-3. ARB files under `lib/l10n/` (`app_en.arb`, `app_uz.arb`, â¦).
-4. Run `flutter gen-l10n` (also runs on `flutter run`/`build`) â generates `AppLocalizations`.
+3. ARB files under `lib/l10n/` (`app_en.arb`, `app_uz.arb`, …).
+4. Run `flutter gen-l10n` (also runs on `flutter run`/`build`) → generates `AppLocalizations`.
 
 ## Wire up MaterialApp
 ```dart
@@ -23,10 +23,10 @@ MaterialApp(
   supportedLocales: AppLocalizations.supportedLocales,
 )
 ```
-Access: `final l10n = AppLocalizations.of(context); Text(l10n.greeting('Alisher'));`
+Access: `final l10n = AppLocalizations.of(context)!; Text(l10n.greeting('Alisher'));` — `of()` returns nullable, so `!` (or set `nullable-getter: false` in `l10n.yaml`).
 
 ## Essential rules
-- **Never hardcode user-facing strings** â all live in ARB files.
+- **Never hardcode user-facing strings** — all live in ARB files.
 - **`@`-descriptions and placeholder types go in the template ARB only**; translations omit `@` metadata.
 - **Use placeholders / plural / select**, never string concatenation for sentences.
 - **Format dates/numbers/currency through `intl`** (`DateFormat`/`NumberFormat`) with the active locale.
@@ -37,17 +37,17 @@ Access: `final l10n = AppLocalizations.of(context); Text(l10n.greeting('Alisher'
 Hold the locale in app state (Riverpod/ValueNotifier), feed `MaterialApp.locale`; `null` defers to device. Persist (e.g. `shared_preferences`) and restore on launch.
 
 ## Gotchas
-- **ARB placeholders need declared types** â every `{placeholder}` requires a `@key` entry with `placeholders: { name: { type: ... } }` in the template, or gen-l10n fails / mistypes the param.
-- **Re-run `flutter gen-l10n` after editing ARB files** â the generated `AppLocalizations` is stale until you do (it also runs on `flutter run`/`build`).
-- **`intl` is pinned by the Flutter SDK** â don't blindly override the version in `pubspec.yaml`; let the SDK constraint win or builds break.
+- **ARB placeholders need declared types** — every `{placeholder}` requires a `@key` entry with `placeholders: { name: { type: ... } }` in the template, or gen-l10n fails / mistypes the param.
+- **Re-run `flutter gen-l10n` after editing ARB files** — the generated `AppLocalizations` is stale until you do (it also runs on `flutter run`/`build`).
+- **`intl` is pinned by the Flutter SDK** — don't blindly override the version in `pubspec.yaml`; let the SDK constraint win or builds break.
 
 ## Output contract
 When this skill is active, keep responses tight and scannable:
 - **Announce first:** open the reply with a one-line marker naming the active skill — e.g. `🛠️ flutter:theming` or `🛠️ dart:async` — so the user can see which skill fired, then continue with the answer.
-- Lead with the fix or answer â no preamble, no restating the request.
-- Organize by file: one-line purpose â code block â â¤3 bullets on what changed and why.
+- Lead with the fix or answer — no preamble, no restating the request.
+- Organize by file: one-line purpose → code block → ≤3 bullets on what changed and why.
 - Code first, prose second. Explain only what isn't obvious from the code.
-- Short bullets, not paragraphs (each â¤2 lines); **bold** the key term.
+- Short bullets, not paragraphs (each ≤2 lines); **bold** the key term.
 - End with a **Check:** list of 2-5 concrete things to verify (builds, analyzer clean, works across sizes/locales, no leaks).
 - Don't pad length or echo the user's unchanged code back.
 

@@ -10,9 +10,9 @@ You are a Flutter build engineer who wires dev/staging/prod flavors across Andro
 - Needing distinct bundle IDs/app names/icons per environment, or env-specific config (base URLs, keys).
 
 ## Detect first
-Before writing config, match the existing project â don't impose a parallel setup:
+Before writing config, match the existing project — don't impose a parallel setup:
 - **Android**: does `android/app/build.gradle.kts` already declare `flavorDimensions`/`productFlavors`? Reuse the dimension name and suffix scheme.
-- **iOS**: open `ios/Runner.xcodeproj` â are there existing schemes (`Runner-dev`, etc.) and `.xcconfig` files? Match their naming.
+- **iOS**: open `ios/Runner.xcodeproj` — are there existing schemes (`Runner-dev`, etc.) and `.xcconfig` files? Match their naming.
 - **Dart**: is config read via `appFlavor`, `--dart-define`, or separate `main_*.dart` entry points? Follow the existing pattern.
 - **Config source**: look for `config/*.json` (dart-define-from-file) before adding a new mechanism.
 
@@ -20,13 +20,13 @@ Before writing config, match the existing project â don't impose a parallel
 
 | Do | Avoid (known AI mistakes) |
 |----|----|
-| Read the flavor via the **`appFlavor`** constant (Flutter 3.19+) | `String.fromEnvironment('FLAVOR')` hack â stale, no longer needed |
-| Define Android `productFlavors` in **`build.gradle.kts`** (Kotlin DSL) with `applicationIdSuffix` | Editing legacy Groovy `build.gradle` â `flutter create` is Kotlin DSL now |
-| Mark every iOS scheme **"Shared"** | Leaving schemes unshared â CI/`flutter build` can't find them |
+| Read the flavor via the **`appFlavor`** constant (Flutter 3.19+) | `String.fromEnvironment('FLAVOR')` hack — stale, no longer needed |
+| Define Android `productFlavors` in **`build.gradle.kts`** (Kotlin DSL) with `applicationIdSuffix` | Editing legacy Groovy `build.gradle` — `flutter create` is Kotlin DSL now |
+| Mark every iOS scheme **"Shared"** | Leaving schemes unshared → CI/`flutter build` can't find them |
 | Inject config via **`--dart-define-from-file=config/dev.json`** | Hardcoding URLs/keys per flavor in Dart |
 | Put secrets in native key stores / a backend | Putting secrets in `.env` assets or `--dart-define` (both extractable) |
 
-### Android â `android/app/build.gradle.kts`
+### Android — `android/app/build.gradle.kts`
 ```kotlin
 android {
     flavorDimensions += "env"
@@ -51,26 +51,26 @@ flutter build apk --flavor prod -t lib/main_prod.dart --dart-define-from-file=co
 ```
 
 ## Gotchas
-- **`String.fromEnvironment('FLAVOR')` is a known AI mistake** â it only works if you manually pass `--dart-define=FLAVOR=...`. Use the built-in **`appFlavor`** constant instead (Flutter 3.19+).
-- **Unshared iOS schemes are a known AI mistake** â a scheme defaults to user-local; CI and `flutter build ipa` silently fail to find it. Tick **"Shared"** in *Manage Schemes* and commit `xcshareddata/xcschemes/*.xcscheme`.
-- **Secrets in `.env`/`flutter_dotenv` assets are extractable plaintext** â the asset ships inside the bundle; anyone can unzip it. `--dart-define` is obfuscation-grade and **Dart-only** (not visible to native Swift/Kotlin) but still extractable. Both are fine for *non-secret* config only. Cross-ref the `flutter:security` skill for real secret handling.
+- **`String.fromEnvironment('FLAVOR')` is a known AI mistake** — it only works if you manually pass `--dart-define=FLAVOR=...`. Use the built-in **`appFlavor`** constant instead (Flutter 3.19+).
+- **Unshared iOS schemes are a known AI mistake** — a scheme defaults to user-local; CI and `flutter build ipa` silently fail to find it. Tick **"Shared"** in *Manage Schemes* and commit `xcshareddata/xcschemes/*.xcscheme`.
+- **Secrets in `.env`/`flutter_dotenv` assets are extractable plaintext** — the asset ships inside the bundle; anyone can unzip it. `--dart-define` is obfuscation-grade and **Dart-only** (not visible to native Swift/Kotlin) but still extractable. Both are fine for *non-secret* config only. Cross-ref the `flutter:security` skill for real secret handling.
 - **Android `dimension` is required** on every flavor once `flavorDimensions` is declared, or Gradle sync fails.
-- **iOS needs the `.xcconfig` wired into the scheme's build config** (Debug-dev/Release-dev) â adding the file isn't enough; set it under *Project â Info â Configurations*.
+- **iOS needs the `.xcconfig` wired into the scheme's build config** (Debug-dev/Release-dev) — adding the file isn't enough; set it under *Project → Info → Configurations*.
 
 ## Common mistakes
-- `String.fromEnvironment('FLAVOR')` â use `appFlavor`.
-- Groovy `build.gradle` edits â use the generated `build.gradle.kts`.
-- Schemes left unshared â mark Shared and commit the xcscheme.
-- Secrets in `.env`/dart-define â keep only non-secret config there.
-- One bundle ID for all flavors â add `applicationIdSuffix` so dev/prod install side by side.
+- `String.fromEnvironment('FLAVOR')` → use `appFlavor`.
+- Groovy `build.gradle` edits → use the generated `build.gradle.kts`.
+- Schemes left unshared → mark Shared and commit the xcscheme.
+- Secrets in `.env`/dart-define → keep only non-secret config there.
+- One bundle ID for all flavors → add `applicationIdSuffix` so dev/prod install side by side.
 
 ## Output contract
 When this skill is active, keep responses tight and scannable:
 - **Announce first:** open the reply with a one-line marker naming the active skill — e.g. `🛠️ flutter:theming` or `🛠️ dart:async` — so the user can see which skill fired, then continue with the answer.
-- Lead with the fix or answer â no preamble, no restating the request.
-- Organize by file: one-line purpose â code block â â¤3 bullets on what changed and why.
+- Lead with the fix or answer — no preamble, no restating the request.
+- Organize by file: one-line purpose → code block → ≤3 bullets on what changed and why.
 - Code first, prose second. Explain only what isn't obvious from the code.
-- Short bullets, not paragraphs (each â¤2 lines); **bold** the key term.
+- Short bullets, not paragraphs (each ≤2 lines); **bold** the key term.
 - End with a **Check:** list of 2-5 concrete things to verify (builds, analyzer clean, native config done, no secrets).
 - Don't pad length or echo the user's unchanged code back.
 
