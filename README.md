@@ -1,5 +1,11 @@
 # Flutter & Dart Skills
 
+[![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-7C3AED)](https://code.claude.com/docs/en/plugins)
+[![skills](https://img.shields.io/badge/skills-36-blue)](#flutter-plugin--flutterskill)
+[![lint-skills](https://github.com/alisheraxmedov/flutter-skills/actions/workflows/lint-skills.yml/badge.svg)](https://github.com/alisheraxmedov/flutter-skills/actions/workflows/lint-skills.yml)
+[![Flutter 3.44 · Dart 3.12](https://img.shields.io/badge/Flutter%203.44-Dart%203.12-02569B?logo=flutter)](https://flutter.dev)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
 A Claude Code marketplace of **36 skills** for writing production-quality **Flutter** and **Dart** code — from architecture, state, and UI to security, Firebase, native interop, signing, and release. Built on the official Flutter app-architecture guide and current 2026 best practices (Flutter 3.44 / Dart 3.12, Riverpod 3, flutter_bloc, go_router, dio, freezed, Material 3).
 
 Each skill is **token-efficient by design**: a short core `SKILL.md` (rules, decision tables, a strict output contract) plus on-demand `reference/*.md` files that Claude loads only when a task needs the deep examples — so most of the content costs zero tokens until it's actually used.
@@ -134,7 +140,7 @@ flutter-skills/
         └── reference/*.md
 ```
 
-The repo also ships an **`evals/`** harness — task prompts + objective rubrics + `run-checks.sh` (`flutter analyze`, `dart format`, tests, anti-pattern greps) — so each skill can be measured **with-skill vs baseline** (see `evals/README.md`). A roadmap of what's built and what's next lives in `docs/ROADMAP.md`.
+The repo also ships an **`evals/`** harness — task prompts, objective rubrics, and an **automated runner** (`evals/run.sh`) that generates **with-skill vs baseline** output and scores it with an LLM judge. On the 7-case high-signal suite the skills lift a **cost-efficient model (Haiku 4.5) from 38% → 64%** — a **+26 pp** uplift (mean of 2 runs; numbers are noisy at this sample size). On a **frontier model (Opus 4.8)** the baseline is already near-ceiling, so the measurable delta on these single-file snippets is **≈ 0** — the frontier value is cross-file consistency, which this snippet suite doesn't measure. Full numbers, per-run detail, and honest caveats in [`evals/RESULTS.md`](evals/RESULTS.md).
 
 **Dart skills (6):** `dart` · `async` · `model` · `analyze` · `test` · `optimization`
 
