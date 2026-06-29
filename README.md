@@ -1,6 +1,7 @@
 # Flutter & Dart Skills
 
 [![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-7C3AED)](https://code.claude.com/docs/en/plugins)
+[![skills.sh](https://skills.sh/b/alisheraxmedov/flutter-skills)](https://skills.sh/alisheraxmedov/flutter-skills)
 [![skills](https://img.shields.io/badge/skills-36-blue)](#flutter-plugin--flutterskill)
 [![lint-skills](https://github.com/alisheraxmedov/flutter-skills/actions/workflows/lint-skills.yml/badge.svg)](https://github.com/alisheraxmedov/flutter-skills/actions/workflows/lint-skills.yml)
 [![Flutter 3.44 · Dart 3.12](https://img.shields.io/badge/Flutter%203.44-Dart%203.12-02569B?logo=flutter)](https://flutter.dev)
@@ -16,7 +17,9 @@ Each skill is **token-efficient by design**: a short core `SKILL.md` (rules, dec
 
 ## Install
 
-Run these commands inside Claude Code:
+### Option A — Claude Code plugin (recommended)
+
+Gets the full experience: both plugins, the orchestrator entry point, and the SessionStart hook. Run inside Claude Code:
 
 ```
 /plugin marketplace add alisheraxmedov/flutter-skills
@@ -24,7 +27,17 @@ Run these commands inside Claude Code:
 /plugin install flutter@flutter-dart-marketplace
 ```
 
-Once installed, skills trigger **automatically** when relevant to your task, or you can invoke one explicitly with `/<plugin>:<skill>`.
+Then invoke skills explicitly with `/<plugin>:<skill>` (e.g. `/flutter:state-management`), or just describe your task and the orchestrator routes for you.
+
+### Option B — `skills` CLI (Claude Code, Cursor, Copilot, Codex, Gemini & more)
+
+Installs all 36 `SKILL.md` files into your agent from your terminal — no Claude Code required:
+
+```
+npx skills add alisheraxmedov/flutter-skills
+```
+
+Either way, skills trigger **automatically** when relevant to your task.
 
 ## Dart plugin — `/dart:<skill>`
 
