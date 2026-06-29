@@ -42,6 +42,7 @@ fi
 
 # Emit the additional-context note. Keep it short; Claude reads it as a system
 # reminder on the next request.
+# shellcheck disable=SC2016  # backticks are literal markdown in the note text, not command substitution
 note='Flutter/Dart project detected. For any Flutter or Dart work, run the `flutter` orchestrator skill FIRST: it detects the project setup and routes to the right specialist skills (state-management, navigation, networking, theming, testing, etc.) before code is written.'
 
 # Build valid JSON. Prefer jq when available; otherwise emit a hand-escaped

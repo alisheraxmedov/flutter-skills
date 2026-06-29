@@ -74,6 +74,7 @@ ANTI: $3
 
 GENERATED CODE:
 $1"
+  # shellcheck disable=SC2016  # literal backticks in the sed fence-strip are intentional
   claude -p "$prompt" "${NOTOOLS[@]}" 2>/dev/null \
     | sed 's/```json//g; s/```//g' | tr '\n' ' ' \
     | grep -oE '\{[^{}]*"passed"[^{}]*\}' | tail -1
