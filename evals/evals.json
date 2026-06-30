@@ -157,7 +157,7 @@
   },
   {
     "id": "model-immutable-class",
-    "skill": "dart:model",
+    "skill": "dart:data-model",
     "query": "Model a User entity with id, name, and optional email. It should have value equality and be usable in a Set.",
     "expected_behavior": [
       "all fields are `final` (no setters) and the class has a `const` constructor where possible",

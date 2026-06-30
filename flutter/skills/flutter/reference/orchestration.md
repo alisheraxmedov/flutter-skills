@@ -11,7 +11,7 @@ User instructions always win: if the user says "don't use Bloc" or "skip tests,"
 ## Skill priority when several apply
 
 1. **Detect/architecture first** — this skill: figure out the project and where files go.
-2. **Foundational specialists** — `flutter:networking`, `flutter:error-handling`, `dart:model` (data + failures the feature depends on).
+2. **Foundational specialists** — `flutter:networking`, `flutter:error-handling`, `dart:data-model` (data + failures the feature depends on).
 3. **State** — `flutter:state-management` (covers Riverpod and Bloc; follows whichever the project uses).
 4. **UI specialists** — `flutter:navigation`, `flutter:forms`, `flutter:theming`, `flutter:responsive`, `flutter:animation`, `flutter:i18n`.
 5. **Quality last** — `flutter:test`, `flutter:analyze`, `flutter:optimization`, then `flutter:review`.

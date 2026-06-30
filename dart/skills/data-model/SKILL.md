@@ -1,5 +1,5 @@
 ---
-name: model
+name: data-model
 description: Designs immutable Dart data and domain models, DTOs, and sealed unions, choosing between freezed/json_serializable and hand-written classes. Use when modeling entities, parsing JSON, or representing union/variant types.
 ---
 

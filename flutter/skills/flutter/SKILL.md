@@ -50,7 +50,7 @@ If a task touches an area below, you **must** invoke the matching skill before c
 | Tests (unit/widget/golden/integration) | `flutter:test` |
 | Jank, rebuilds, memory/perf | `flutter:optimization` |
 | Reviewing existing/just-written code | `flutter:review` |
-| Dart language, models, async, isolates | `dart:dart` · `dart:model` · `dart:async` |
+| Dart language, models, async, isolates | `dart:dart` · `dart:data-model` · `dart:async` |
 
 ## Detect the project first (before writing code)
 Read the project and match its conventions — don't introduce a parallel setup:

@@ -45,7 +45,7 @@ Either way, skills trigger **automatically** when relevant to your task.
 |-------|--------------|
 | `/dart:dart` | Idiomatic Dart 3 — naming, null safety, pattern matching, records, sealed classes, class modifiers |
 | `/dart:async` | Futures, streams, isolates — async/await, parallelism, cancellation, no blocking the event loop |
-| `/dart:model` | Immutable data & domain models — hand-written sealed unions vs `freezed` + `json_serializable` |
+| `/dart:data-model` | Immutable data & domain models — hand-written sealed unions vs `freezed` + `json_serializable` |
 | `/dart:analyze` | Strict `analysis_options.yaml`, `dart analyze --fatal-infos`, `dart fix`, `dart format` |
 | `/dart:test` | Unit tests with `package:test` + `mocktail` — AAA pattern, async, edge cases, coverage |
 | `/dart:optimization` | `const`/`final` discipline, tight typing, lazy iterables, efficient collections |
@@ -128,7 +128,7 @@ The skills bake in the things AI-generated Flutter code usually gets wrong:
 - **Clean code & SRP** (`dart`): naming, one class = one job, one method = one job.
 - **Declarations** (`dart`): when to use `var` / `final` / `const` / `late` / `required`.
 - **Theming** (`theming`): centralized Material 3 theme — never hardcode `Color`/`TextStyle`.
-- **Stays current** (`state-management`, `networking`, `navigation`, `model`): instead of hardcoding versions, these read `pubspec.lock` for the project's version and check pub.dev + the package changelog **only when adding/upgrading** — so they don't go stale.
+- **Stays current** (`state-management`, `networking`, `navigation`, `data-model`): instead of hardcoding versions, these read `pubspec.lock` for the project's version and check pub.dev + the package changelog **only when adding/upgrading** — so they don't go stale.
 - **Native & release footguns** (`push-notifications`, `release`, `deep-linking`, `firebase`): the things that pass in debug but break in release or need Xcode/Gradle/hosted-file config AI usually skips — `@pragma('vm:entry-point')` background handlers, Kotlin-DSL signing, `assetlinks.json`/AASA, and never shipping test-mode Firestore rules.
 - **Stale-API protection** (`migrations`, `persistence`, `packaging`): each skill flags the deprecated forms AI still emits — `withOpacity`→`withValues`, `textScaleFactor`→`TextScaler`, Isar/Hive→`drift`/`hive_ce`, `melos.yaml`→pub workspaces, Groovy→Kotlin DSL.
 
@@ -155,7 +155,7 @@ flutter-skills/
 
 The repo also ships an **`evals/`** harness — task prompts, objective rubrics, and an **automated runner** (`evals/run.sh`) that generates **with-skill vs baseline** output and scores it with an LLM judge. On the 7-case high-signal suite the skills lift a **cost-efficient model (Haiku 4.5) from 38% → 64%** — a **+26 pp** uplift (mean of 2 runs; numbers are noisy at this sample size). On a **frontier model (Opus 4.8)** the baseline is already near-ceiling, so the measurable delta on these single-file snippets is **≈ 0** — the frontier value is cross-file consistency, which this snippet suite doesn't measure. Full numbers, per-run detail, and honest caveats in [`evals/RESULTS.md`](evals/RESULTS.md).
 
-**Dart skills (6):** `dart` · `async` · `model` · `analyze` · `test` · `optimization`
+**Dart skills (6):** `dart` · `async` · `data-model` · `analyze` · `test` · `optimization`
 
 **Flutter skills (30):** `flutter` (orchestrator) · `state-management` · `navigation` · `deep-linking` · `networking` · `theming` · `error-handling` · `observability` · `forms` · `animation` · `responsive` · `accessibility` · `i18n` · `image-assets` · `security` · `firebase` · `persistence` · `flavors-env` · `release` · `ci-cd` · `app-size` · `isolates-background` · `platform-channels` · `push-notifications` · `migrations` · `packaging` · `analyze` · `test` · `optimization` · `review`
 

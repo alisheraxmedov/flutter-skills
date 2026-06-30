@@ -14,7 +14,7 @@ Before coding, pull in the matching skill when the task goes beyond plain langua
 
 | Task touches | Invoke |
 |---|---|
-| Data/domain models, DTOs, unions, JSON, freezed | `dart:model` |
+| Data/domain models, DTOs, unions, JSON, freezed | `dart:data-model` |
 | Futures, streams, isolates, concurrency | `dart:async` |
 | Lints / `analysis_options.yaml` | `dart:analyze` |
 | Unit tests, mocktail | `dart:test` |
