@@ -71,7 +71,7 @@ Use **Approve** (or "Approve with nits") only when no Blocking and no unaddresse
 
 ## Output contract
 When this skill is active, keep responses tight and scannable:
-- **Announce first:** open the reply with a one-line marker naming the active skill — e.g. `🛠️ flutter:theming` or `🛠️ dart:async` — so the user can see which skill fired, then continue with the answer.
+- **Announce first:** before anything else, open the reply with a one-line marker that names **every** skill you actually invoked for this reply and what each is for — format `🛠️ Using <namespace:skill>[ + <namespace:skill> …] — <purpose>`. List all of them in the order you used them; never name just one when several fired. Examples: `🛠️ Using dart:async — to make the fetch loop cancelable` · `🛠️ Using flutter:state-management + flutter:navigation + dart:async — to wire the dark-mode view model`. Then continue with the answer.
 - Lead with the verdict (Approve / Changes needed) — no preamble.
 - Group findings by severity: **Blocking**, **Should-fix**, **Nit**.
 - For each finding: file:line → one-line problem → the concrete fix (code if short).

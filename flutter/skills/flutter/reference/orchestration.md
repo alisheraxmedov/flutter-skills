@@ -4,7 +4,7 @@ This skill is the **entry point** for Flutter work. Its job is to route to speci
 
 ## The rule
 
-Invoke the matching specialist skill via the **Skill tool** *before* writing code. Treat a >1% chance that a skill applies as "invoke it" — if it turns out irrelevant, you don't have to use it. Announce briefly: "Using `flutter:state-management` to wire the view model."
+Invoke the matching specialist skill via the **Skill tool** *before* writing code. Treat a >1% chance that a skill applies as "invoke it" — if it turns out irrelevant, you don't have to use it. Announce **every** specialist you invoke with the one-line Output-contract marker, naming all of them — e.g. `🛠️ Using flutter:state-management + dart:data-model — to wire the view model`.
 
 User instructions always win: if the user says "don't use Bloc" or "skip tests," follow the user.
 

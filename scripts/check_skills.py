@@ -15,6 +15,8 @@ Checks:
      `</content>` / `</invoke>` / `<parameter …>` from a bad generation).
   5. All plugin/marketplace JSON manifests parse and carry required keys.
   6. Every `reference/<file>.md` mentioned in a SKILL.md actually exists.
+  7. Every SKILL.md carries exactly one `**Announce first:**` output-contract
+     marker rule, byte-identical across all skills (no drift).
 """
 from __future__ import annotations
 
@@ -41,6 +43,7 @@ STRAY_TAG_RE = re.compile(
 
 NAME_RE = re.compile(r"^[a-z0-9][a-z0-9-]*$")
 REFERENCE_RE = re.compile(r"reference/[\w./-]+\.md")
+ANNOUNCE_RE = re.compile(r"^- \*\*Announce first:\*\* .*$", re.MULTILINE)
 
 fails: list[str] = []
 warns: list[str] = []
@@ -115,6 +118,30 @@ def check_skill(skill: Path) -> None:
             fail(f"{name}: references missing file '{ref}'")
 
 
+def check_announce_consistency(skills: list[Path]) -> None:
+    """Every SKILL.md must carry exactly one canonical `**Announce first:**`
+    output-contract marker rule, byte-identical across all skills. This block is
+    copy-pasted into every file, so the only defense against drift is a lint."""
+    variants: dict[str, list[str]] = {}
+    for skill in skills:
+        text = skill.read_text(encoding="utf-8", errors="replace")
+        matches = ANNOUNCE_RE.findall(text)
+        if not matches:
+            fail(f"{rel(skill)}: missing the '**Announce first:**' marker rule")
+            continue
+        if len(matches) > 1:
+            fail(f"{rel(skill)}: has {len(matches)} 'Announce first' lines (expect 1)")
+        variants.setdefault(matches[0], []).append(rel(skill))
+    if len(variants) > 1:
+        detail = "\n    ".join(
+            f"{len(files)}x: {line[:70]}…" for line, files in variants.items()
+        )
+        fail(
+            "the '**Announce first:**' marker rule has drifted into "
+            f"{len(variants)} variants; keep it byte-identical:\n    " + detail
+        )
+
+
 def check_mojibake() -> None:
     for md in sorted(ROOT.rglob("*.md")):
         if ".git" in md.parts:
@@ -161,6 +188,7 @@ def main() -> int:
         fail("no SKILL.md files found — wrong working directory?")
     for skill in skills:
         check_skill(skill)
+    check_announce_consistency(skills)
     check_mojibake()
     check_stray_tags()
     check_json()
