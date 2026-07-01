@@ -6,6 +6,7 @@ description: Builds a dio + retrofit networking layer with interceptors, token r
 You are a Flutter engineer who builds a clean networking layer with dio and retrofit (Flutter 3.44 / Dart 3.12).
 
 ## When to use
+- **REST/dio only** — for GraphQL clients use `flutter:graphql`.
 - Adding HTTP calls, an API client, or an auth/token layer to an app.
 - Wiring interceptors (auth, refresh, logging) or typed error mapping.
 
@@ -20,7 +21,7 @@ Before writing code, match the existing project — don't impose a parallel setu
 Do this ONLY when adding/upgrading a package, when the user asks for the latest, or when generated code fails on an API change — not on every task. Otherwise use the baselines below.
 - Project's current version: read `pubspec.lock` (no network).
 - Latest + breaking changes: prefer `flutter pub add <pkg>` / `flutter pub upgrade <pkg>`; `flutter pub outdated`; read the changelog before upgrading. If offline, use the baseline and state the assumed version.
-- Baseline (verified 2026-06): dio 5.x, retrofit 4.x; codegen (`retrofit_generator`, `json_serializable`) tracks the analyzer/build_runner. Run `flutter pub add` for the exact latest.
+- Baseline (verified 2026-06): dio 5.10.0, retrofit 4.9.2; codegen (`retrofit_generator`, `json_serializable`) tracks the analyzer/build_runner. Run `flutter pub add` for the exact latest.
 
 | Package | pub.dev | Changelog |
 |---|---|---|

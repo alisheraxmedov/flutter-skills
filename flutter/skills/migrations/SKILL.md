@@ -37,15 +37,15 @@ dart fix --apply       # rewrite in place
 
 **Major bumps cascade natively.** One Flutter major can force: Android **AGP** + **Gradle wrapper** + **Kotlin** + `compileSdk`/`minSdk`, iOS **CocoaPods** + Podfile `platform :ios` + `pod repo update`, plus transitive package constraints. Walk `reference/major-upgrade-checklist.md` step by step; resolve conflicts via `flutter pub outdated`.
 
-**Sweep deprecated APIs** (the stale forms AI emits most): `withOpacity()` → **`withValues(alpha:)`**, `textScaleFactor` → **`TextScaler`**, `MaterialStateProperty` → **`WidgetStateProperty`**, `Color.value`/`.red`/`.green` → component accessors (`.r`/`.g`/`.b`/`.a`), `ThemeData.background`/`onBackground` removed → `surface`/`onSurface`. Full table in `reference/deprecated-apis.md`. Finish with `flutter analyze` + tests.
+**Sweep deprecated APIs** (the stale forms AI emits most): `withOpacity()` (deprecated 3.27) → **`withValues(alpha:)`**, `textScaleFactor` (deprecated 3.16) → **`TextScaler`**, `MaterialStateProperty`/`MaterialState` → **`WidgetStateProperty`**/`WidgetState`, `Color.value`/`.red`/`.green`/`.blue`/`.opacity` → component accessors (`.r`/`.g`/`.b`/`.a`, 0–1 doubles) + `Color.from`/`withValues`, `ThemeData.background`/`onBackground` removed → `surface`/`onSurface`. Package-level too: freezed `when`/`map` → Dart 3 patterns (see `dart:data-model`); Riverpod legacy providers → `package:flutter_riverpod/legacy.dart` and `.valueOrNull` → `.value` (see `flutter:state-management`). Full table in `reference/deprecated-apis.md`. Finish with `flutter analyze` + tests.
 
 ## Gotchas
 - **`flutter upgrade` as the default is a known AI mistake** — it mutates the global SDK and breaks other projects/CI. Pin per project with **fvm** (`.fvmrc`).
 - **`dart migrate` is a known AI mistake** — it was the one-time null-safety tool and has been **removed**. The migration command today is **`dart fix --apply`**.
 - **Bumping only Dart/pub on a major jump** misses the native cascade — AGP/Gradle/Kotlin/SDK on Android and CocoaPods/Podfile on iOS must move too, or the build fails natively.
-- **`withOpacity()` is deprecated** (precision loss) — use **`withValues(alpha:)`**. Emitting `withOpacity` is a known AI-stale form.
+- **`withOpacity()` is deprecated (Flutter 3.27, wide-gamut precision)** — use **`withValues(alpha:)`**. Emitting `withOpacity` is a known AI-stale form.
 - **`MaterialStateProperty`/`MaterialState` renamed to `WidgetStateProperty`/`WidgetState`** — the old names are deprecated AI-stale forms.
-- **`textScaleFactor` (double) removed** in favor of **`TextScaler`** — `MediaQuery.textScaleFactorOf` → `textScalerOf`.
+- **`textScaleFactor` (double) deprecated since Flutter 3.16** in favor of **`TextScaler`** — `MediaQuery.textScaleFactorOf` → `textScalerOf`.
 - **Skipping `flutter pub outdated`** leads to unsolvable constraints — resolve transitive deps before hand-editing versions.
 
 ## Common mistakes

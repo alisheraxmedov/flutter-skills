@@ -63,6 +63,8 @@ A new Flutter major usually requires newer Android tooling. Check and bump:
 
 > AGP ↔ Gradle ↔ Kotlin ↔ Android Studio versions are coupled; mismatches surface as cryptic Gradle errors. Bump them as a set to versions the Flutter release notes call out.
 
+> **Groovy is not deprecated.** Kotlin DSL (`.gradle.kts`) is the default for *new* projects since Flutter 3.29; existing Groovy `.gradle` projects keep working and need not migrate. What changed is the **imperative `apply` of Flutter's Gradle plugins → the declarative `plugins {}` DSL**. The `.kts` snippets above are the new-project default, not a forced migration.
+
 ## 5. iOS native cascade
 - **Podfile** `platform :ios, '13.0'` — raise to the minimum the new SDK/plugins require.
 - Refresh pods after dep bumps:
