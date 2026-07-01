@@ -39,6 +39,33 @@ npx skills add alisheraxmedov/flutter-skills
 
 Either way, skills trigger **automatically** when relevant to your task.
 
+## Update
+
+Installing **copies the plugin into Claude Code's own cache** — editing this repo (or pulling a new release) does **not** change an already-installed copy until you refresh the marketplace. The marketplace **name** is `flutter-dart-marketplace` (from `marketplace.json`), not the repo name `flutter-skills` — use it in `install`/`update` commands.
+
+### Option A — Claude Code plugin
+
+```
+/plugin marketplace update flutter-dart-marketplace
+```
+
+Then **restart Claude Code** (or run `/reload-plugins`). If an old or renamed skill still lingers (e.g. you still see a removed `/model` instead of `/data-model`), do a clean re-add:
+
+```
+/plugin marketplace remove flutter-dart-marketplace
+/plugin marketplace add alisheraxmedov/flutter-skills
+/plugin install dart@flutter-dart-marketplace
+/plugin install flutter@flutter-dart-marketplace
+```
+
+### Option B — `skills` CLI
+
+```
+npx skills update -p -y      # project scope; use -g for global installs
+```
+
+> **Note on versions:** installed plugins only pick up changes when the plugin `version` is bumped (see each `plugin.json`). Each release here bumps the affected plugin's SemVer, so `marketplace update` + restart is enough to get the latest skills.
+
 ## Dart plugin — `/dart:<skill>`
 
 | Skill | What it does |
