@@ -25,12 +25,15 @@ If a task touches an area below, you **must** invoke the matching skill before c
 | Routing, navigation, tabs, redirects | `flutter:navigation` |
 | Deep links, App Links, Universal Links, assetlinks/AASA | `flutter:deep-linking` |
 | HTTP/REST/API, dio, interceptors | `flutter:networking` |
+| GraphQL, graphql_flutter, ferry, queries/mutations/subscriptions, normalized cache | `flutter:graphql` |
 | Colors, theme, dark mode, typography | `flutter:theming` |
 | Errors, `Result`/`Failure`, exceptions | `flutter:error-handling` |
 | Crash reporting, logging, Crashlytics/Sentry | `flutter:observability` |
 | Forms, text input, validation | `flutter:forms` |
 | Animations, transitions | `flutter:animation` |
+| Custom painting, `CustomPainter`/`Canvas`, charts/shapes, gestures, hit testing | `flutter:custom-paint` |
 | Responsive/adaptive layout, tablet/desktop | `flutter:responsive` |
+| Layout & constraints, Row/Column/Flex/Expanded, Stack, slivers, overflow/unbounded errors, keys, render tree, `InheritedWidget` | `flutter:layout` |
 | Accessibility, semantics, screen readers, text scaling | `flutter:accessibility` |
 | Localization, translations, RTL | `flutter:i18n` |
 | Images, assets, caching, image memory | `flutter:image-assets` |

@@ -2,12 +2,12 @@
 
 [![Claude Code plugin](https://img.shields.io/badge/Claude%20Code-plugin-7C3AED)](https://code.claude.com/docs/en/plugins)
 [![skills.sh](https://skills.sh/b/alisheraxmedov/flutter-skills)](https://skills.sh/alisheraxmedov/flutter-skills)
-[![skills](https://img.shields.io/badge/skills-36-blue)](#flutter-plugin--flutterskill)
+[![skills](https://img.shields.io/badge/skills-39-blue)](#flutter-plugin--flutterskill)
 [![lint-skills](https://github.com/alisheraxmedov/flutter-skills/actions/workflows/lint-skills.yml/badge.svg)](https://github.com/alisheraxmedov/flutter-skills/actions/workflows/lint-skills.yml)
 [![Flutter 3.44 · Dart 3.12](https://img.shields.io/badge/Flutter%203.44-Dart%203.12-02569B?logo=flutter)](https://flutter.dev)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-A Claude Code marketplace of **36 skills** for writing production-quality **Flutter** and **Dart** code — from architecture, state, and UI to security, Firebase, native interop, signing, and release. Built on the official Flutter app-architecture guide and current 2026 best practices (Flutter 3.44 / Dart 3.12, Riverpod 3, flutter_bloc, go_router, dio, freezed, Material 3).
+A Claude Code marketplace of **39 skills** for writing production-quality **Flutter** and **Dart** code — from architecture, state, layout/rendering, and UI to data (REST & GraphQL), security, Firebase, native interop, signing, and release. Built on the official Flutter app-architecture guide and current 2026 best practices (Flutter 3.44 / Dart 3.12, Riverpod 3, flutter_bloc, go_router, dio, freezed, Material 3).
 
 Each skill is **token-efficient by design**: a short core `SKILL.md` (rules, decision tables, a strict output contract) plus on-demand `reference/*.md` files that Claude loads only when a task needs the deep examples — so most of the content costs zero tokens until it's actually used.
 
@@ -31,7 +31,7 @@ Then invoke skills explicitly with `/<plugin>:<skill>` (e.g. `/flutter:state-man
 
 ### Option B — `skills` CLI (Claude Code, Cursor, Copilot, Codex, Gemini & more)
 
-Installs all 36 `SKILL.md` files into your agent from your terminal — no Claude Code required:
+Installs all 39 `SKILL.md` files into your agent from your terminal — no Claude Code required:
 
 ```
 npx skills add alisheraxmedov/flutter-skills
@@ -63,7 +63,9 @@ Either way, skills trigger **automatically** when relevant to your task.
 | `/flutter:theming` | Material 3 `ColorScheme.fromSeed`, `TextTheme`, `ThemeExtension`, dark mode — never hardcode colors |
 | `/flutter:forms` | `Form` + `TextFormField`, validation, focus, controller lifecycle, submit flows |
 | `/flutter:animation` | Implicit vs explicit vs prebuilt animations, controller lifecycle, performance |
+| `/flutter:custom-paint` | `CustomPainter`/`Canvas`/paths, `shouldRepaint` & `Paint` caching, gestures & hit testing |
 | `/flutter:responsive` | MediaQuery, LayoutBuilder, breakpoints, adaptive navigation across phone/tablet/desktop |
+| `/flutter:layout` | Constraints model, Row/Column/Flex/Expanded, Stack, slivers, overflow fixes, keys, render tree, `InheritedWidget` |
 | `/flutter:accessibility` | `Semantics`, screen readers, `TextScaler`, contrast, touch targets, guideline tests |
 | `/flutter:i18n` | `flutter_localizations` + ARB + `gen-l10n` — plurals, formatting, RTL, locale switch |
 | `/flutter:image-assets` | `cached_network_image`, decode-memory (`cacheWidth`), asset variants, SVG |
@@ -73,6 +75,7 @@ Either way, skills trigger **automatically** when relevant to your task.
 | Skill | What it does |
 |-------|--------------|
 | `/flutter:networking` | `dio` + `retrofit` — interceptors, token refresh, typed failures, `Result`-returning repos |
+| `/flutter:graphql` | `graphql_flutter` vs `ferry` — normalized cache, fetch policies, mutation cache updates, 200-with-errors mapping |
 | `/flutter:error-handling` | Sealed `Result`/`Failure`, boundary mapping, global handlers, crash reporting |
 | `/flutter:firebase` | Auth (stream-based), Firestore (offline cache), security rules — never ship test-mode rules |
 | `/flutter:persistence` | drift / sqflite / hive_ce / shared_preferences — choosing + **migrations** (no data loss) |
@@ -130,7 +133,7 @@ The skills bake in the things AI-generated Flutter code usually gets wrong:
 - **Theming** (`theming`): centralized Material 3 theme — never hardcode `Color`/`TextStyle`.
 - **Stays current** (`state-management`, `networking`, `navigation`, `data-model`): instead of hardcoding versions, these read `pubspec.lock` for the project's version and check pub.dev + the package changelog **only when adding/upgrading** — so they don't go stale.
 - **Native & release footguns** (`push-notifications`, `release`, `deep-linking`, `firebase`): the things that pass in debug but break in release or need Xcode/Gradle/hosted-file config AI usually skips — `@pragma('vm:entry-point')` background handlers, Kotlin-DSL signing, `assetlinks.json`/AASA, and never shipping test-mode Firestore rules.
-- **Stale-API protection** (`migrations`, `persistence`, `packaging`): each skill flags the deprecated forms AI still emits — `withOpacity`→`withValues`, `textScaleFactor`→`TextScaler`, Isar/Hive→`drift`/`hive_ce`, `melos.yaml`→pub workspaces, Groovy→Kotlin DSL.
+- **Stale-API protection** (`migrations`, `persistence`, `packaging`): each skill flags the deprecated forms AI still emits — `withOpacity`→`withValues`, `textScaleFactor`→`TextScaler`, freezed `when`/`map`→pattern matching, Riverpod `.valueOrNull`→`.value`, Isar/Hive→`drift`/`hive_ce`, `melos.yaml`→pub workspaces. (Note: Groovy Gradle is *not* deprecated — Kotlin DSL is just the new-project default since 3.29.)
 
 Most skills also carry a `## Common mistakes` checklist in the core plus a `reference/anti-patterns.md` with full `avoid → do` examples, covering 30+ of the most frequent Flutter/Dart anti-patterns (unnecessary `!`, `BuildContext` across async gaps, `setState` misuse, logic in `build()`, undisposed controllers/timers, swallowed errors, logged secrets, `FutureBuilder` refires, god classes, magic numbers, dead code, and more).
 
@@ -157,7 +160,7 @@ The repo also ships an **`evals/`** harness — task prompts, objective rubrics,
 
 **Dart skills (6):** `dart` · `async` · `data-model` · `analyze` · `test` · `optimization`
 
-**Flutter skills (30):** `flutter` (orchestrator) · `state-management` · `navigation` · `deep-linking` · `networking` · `theming` · `error-handling` · `observability` · `forms` · `animation` · `responsive` · `accessibility` · `i18n` · `image-assets` · `security` · `firebase` · `persistence` · `flavors-env` · `release` · `ci-cd` · `app-size` · `isolates-background` · `platform-channels` · `push-notifications` · `migrations` · `packaging` · `analyze` · `test` · `optimization` · `review`
+**Flutter skills (33):** `flutter` (orchestrator) · `state-management` · `navigation` · `deep-linking` · `networking` · `graphql` · `theming` · `error-handling` · `observability` · `forms` · `animation` · `custom-paint` · `layout` · `responsive` · `accessibility` · `i18n` · `image-assets` · `security` · `firebase` · `persistence` · `flavors-env` · `release` · `ci-cd` · `app-size` · `isolates-background` · `platform-channels` · `push-notifications` · `migrations` · `packaging` · `analyze` · `test` · `optimization` · `review`
 
 ## License
 

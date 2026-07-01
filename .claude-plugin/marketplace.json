@@ -1,7 +1,7 @@
 {
   "name": "flutter-dart-marketplace",
-  "version": "3.2.0",
-  "description": "36 production-grade Flutter & Dart skills for Claude Code — Clean Architecture, Riverpod & BLoC, go_router, dio, theming, native interop, security, release & CI — with an orchestrator entry point and an evals harness.",
+  "version": "3.3.0",
+  "description": "39 production-grade Flutter & Dart skills for Claude Code — Clean Architecture, Riverpod & BLoC, go_router, dio & GraphQL, layout & rendering, custom painting, theming, native interop, security, release & CI — with an orchestrator entry point and an evals harness.",
   "owner": {
     "name": "alisherakhmedov",
     "email": "alisheraxmedov4x4@gmail.com"
@@ -14,7 +14,7 @@
     },
     {
       "name": "flutter",
-      "description": "Flutter skills: Clean Architecture, Riverpod & BLoC, go_router navigation, dio networking, forms, animation, responsive, i18n, testing, performance",
+      "description": "Flutter skills: Clean Architecture, Riverpod & BLoC, go_router navigation, dio & GraphQL networking, layout & constraints, custom painting & gestures, forms, animation, responsive, i18n, testing, performance",
       "source": "./flutter"
     }
   ]

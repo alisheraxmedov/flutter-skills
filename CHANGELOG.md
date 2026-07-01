@@ -22,9 +22,41 @@ each plugin is versioned independently with [Semantic Versioning](https://semver
   (with a note on `nullable-getter: false`) so they compile.
 
 ### Added
+- **Three new Flutter skills** — `flutter:layout` (constraint model, Row/Column/Flex/Expanded,
+  Stack, intrinsic sizing, slivers, keys, widget/element/render trees, `InheritedWidget`),
+  `flutter:custom-paint` (`CustomPainter`/`Canvas`/paths, `shouldRepaint` & `Paint` caching,
+  `save`/`restore`/`saveLayer`, gestures & hit testing), and `flutter:graphql`
+  (`graphql_flutter` vs `ferry`, normalized cache + identity, fetch policies, mutation cache
+  updates, the HTTP-200-with-`errors` → `Result`/`Failure` mapping). Marketplace now ships
+  **39 skills** (6 Dart + 33 Flutter).
+- **Dart language depth** — two new references on `dart:dart`: `extensions-and-mixins.md`
+  (extension dispatch is *static*, mixin linearization order, callable classes, custom
+  operators) and `collections-and-generics.md` (Iterable laziness re-evaluation, generic
+  covariance soundness hole, `covariant`, bounded type params).
 - **Linter** — `scripts/check_skills.py` now flags leaked tool-call scaffolding
   tags (content / invoke / parameter close-tags from a bad generation) in any
   `*.md`, without touching legitimate Android/iOS XML.
+
+### Changed
+- **2026 currency pass** across existing skills:
+  - `state-management` — Riverpod 3.3.2 / `riverpod_annotation` 4.0.3 (version lines differ),
+    `.valueOrNull`→`.value`, legacy providers → `package:flutter_riverpod/legacy.dart`,
+    sealed `AsyncValue` exhaustive `switch`, `Ref.mounted` async guards, automatic retry +
+    experimental `riverpod_sqflite` persistence, a `signals` decision row, `hydrated_bloc`.
+  - `data-model` — freezed 3.2.5, `abstract`/`sealed` classes, `when`/`map` deprecated →
+    Dart 3 pattern matching, `dart run build_runner build --delete-conflicting-outputs`.
+  - `optimization` / `animation` — Impeller-default framing: raster-thread vs UI-thread
+    profiling, the `RepaintBoundary` "every-frame → no cache reuse" rule, `cacheExtent`/
+    `prototypeItem`, and SkSL warmup / `--bundle-sksl-path` marked obsolete under Impeller.
+  - `test` — mocktail-over-mockito rationale, `ProviderContainer.test()` (Riverpod 3),
+    4-layer pyramid with a Patrol native-E2E top row; current tool versions.
+  - `analyze` — `flutter_lints` vs `very_good_analysis` (vs `lints` for pure Dart)
+    base-ruleset choice; pick one, don't stack.
+  - `migrations` — made the canonical deprecation source; **corrected** the Gradle guidance
+    (Groovy is *not* deprecated; Kotlin DSL is the new-project default since 3.29; the
+    deprecated part is imperative `apply` → `plugins {}`); cross-links freezed & Riverpod moves.
+  - `networking` — routes GraphQL work to `flutter:graphql`; dio 5.10.0 / retrofit 4.9.2.
+- **Plugin versions** — flutter `3.3.0`, dart `3.2.0`; marketplace `3.3.0`.
 
 ## flutter 3.2.0 · dart 3.1.0 — 2026-06-27
 
