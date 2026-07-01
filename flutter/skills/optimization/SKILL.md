@@ -22,9 +22,9 @@ Each frame may **build** (run `build()`), **layout** (size/position), and **pain
 
 ## Lists and painting
 - **`ListView.builder`/`SliverList.builder` for long lists** — never `Column(children: list.map(...).toList())`, which builds every child up front.
-- Give stateful list items stable `Key`s; set `itemExtent` for fixed-height rows.
+- Give stateful list items stable `Key`s; set `itemExtent` (or `prototypeItem`) for fixed-height rows, and tune `cacheExtent` to trade memory for fewer rebuilds at the scroll edges. For sliver **composition** (mixed scrollable sections) see the **layout** skill — don't duplicate it here.
 - Wrap frequently-repainting subtrees (animation, spinner, video) in `RepaintBoundary` — sparingly; each is its own layer.
-- Lighter containers: `SizedBox`/`ColoredBox`/`DecoratedBox` over `Container`; `FadeTransition` over animated `Opacity`. Decode images at display size (`cacheWidth`/`cacheHeight`).
+- Lighter containers: `SizedBox`/`ColoredBox`/`DecoratedBox` over `Container`; `FadeTransition`/`Transform` over animated `Opacity` (which forces an offscreen `saveLayer` — costly even under Impeller), and avoid clipping inside scrolling lists. Decode images at display size (`cacheWidth`/`cacheHeight`).
 
 ## Memory and leaks
 Dart's GC is **generational + mark-and-sweep**; it **cannot collect objects still referenced**. A forgotten subscription, listener, or controller keeps its whole object graph alive — that is a leak. Always:
@@ -45,7 +45,8 @@ Dart's GC is **generational + mark-and-sweep**; it **cannot collect objects stil
 
 ## Gotchas
 - **`const` only short-circuits if the *whole* subtree is const** — a single non-const child cascades a rebuild up; one stray non-const node defeats it.
-- **`RepaintBoundary` helps only animated/expensive subtrees** — each one is its own layer, so over-adding them costs memory and hurts; don't sprinkle them everywhere.
+- **`RepaintBoundary` caches a subtree's layer so static content isn't re-rasterized** — use it to shield static neighbors from a busy island (animation/spinner/video). A subtree that itself changes *every frame* gets **no** cache reuse, just an extra layer + memory; each is its own layer, so don't sprinkle them.
+- **Read the UI thread and raster thread separately** — in DevTools, Dart `build`/layout/paint-recording runs on the **UI thread**; Impeller rasterization runs on the **raster (GPU) thread**. Jank on each needs a different fix — see `reference/devtools.md`.
 - **Profile in release/profile mode, not debug** — debug builds are unoptimized (assertions, no JIT inlining); jank numbers from debug are meaningless.
 
 ## Output contract

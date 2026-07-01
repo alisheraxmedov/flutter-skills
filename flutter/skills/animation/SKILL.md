@@ -30,8 +30,9 @@ Prefer implicit for simple state transitions. Reach for explicit only when you n
 
 ## Performance
 - Wrap animated subtrees in `RepaintBoundary` to isolate repaints.
-- Animate **cheap** props (opacity, transform); avoid layout, shadows, clipping.
+- Animate **cheap** props — opacity (via `FadeTransition`, not the animated `Opacity` widget) and transform; avoid layout, shadows, clipping.
 - Keep `builder` callbacks tiny; do setup in `initState`, not per tick.
+- **Under Impeller:** avoid `Opacity`/clip-heavy effects inside scrolling lists — they force an offscreen `saveLayer` every frame; prefer transitions (`FadeTransition`/`Transform`).
 
 ## Prebuilt packages
 - **flutter_animate** — chainable: `w.animate().fadeIn(duration: 300.ms).slideY(begin: 0.2)`.
@@ -45,6 +46,7 @@ Prefer implicit for simple state transitions. Reach for explicit only when you n
 - **Always `dispose()` the `AnimationController`** — create it in `initState` with a `vsync`; leaving it undisposed leaks the ticker.
 - **Pass the static subtree to `AnimatedBuilder`'s `child`** and reuse it in the builder — otherwise the whole subtree rebuilds every frame.
 - **Prefer implicit animations for simple cases** (`AnimatedContainer`/`AnimatedOpacity`) — reaching for an explicit controller for a one-shot tween is over-engineering.
+- **SkSL shader warmup is obsolete under Impeller** — Impeller compiles shaders ahead-of-time at build, so `--bundle-sksl-path`/`--cache-sksl` no longer fix first-run animation jank (Skia-legacy; web/legacy-Skia path only).
 
 ## Output contract
 When this skill is active, keep responses tight and scannable:
