@@ -10,7 +10,7 @@ The #1 stale-UI bug: data changes but the UI doesn't. Flutter rebuilds a widget 
 
 ```dart
 @freezed
-class CartState with _$CartState {
+abstract class CartState with _$CartState {
   const factory CartState({
     @Default([]) List<Item> items,
     @Default(false) bool checkingOut,
@@ -77,7 +77,7 @@ Never mutate the list inside the current `AsyncData` and reassign it.
 
 ```dart
 Future<void> toggle(String id) async {
-  final current = state.valueOrNull ?? [];
+  final current = state.value ?? [];
   state = AsyncData([                              // optimistic — new list, new item
     for (final t in current)
       if (t.id == id) t.copyWith(done: !t.done) else t,
@@ -105,7 +105,7 @@ final count = ref.watch(cartNotifierProvider.select((s) => s.items.length));
 
 ## autoDispose: guard async state assignment
 
-An autoDispose provider can be disposed while an `await` is in flight. `AsyncValue.guard` is safe; a raw `state = ...` after an await can throw on a disposed notifier. Re-read fresh state after the await and let guard handle it, or check liveness before assigning.
+An autoDispose provider can be disposed (and its notifier recreated) while an `await` is in flight. `AsyncValue.guard` is safe; before a raw `state = ...` after an await, gate on `if (!ref.mounted) return;`. Re-read fresh state after the await and let guard handle it, or check `ref.mounted` before assigning.
 
 ---
 
@@ -208,5 +208,5 @@ Navigation, snackbars, and dialogs go in `BlocListener`/`listener`, NEVER in `Bl
 2. NEW collection built (spread / `.where().toList()` / collection-for), not `.add`/`.remove` on the reused list?
 3. Equatable `props` / freezed fields cover ALL state fields?
 4. UI watches in `build` — `ref.watch` (Riverpod) or `BlocBuilder`/`context.watch` (Bloc), not `read`?
-5. Async guarded — autoDispose (`AsyncValue.guard`) / `isClosed` (Cubit) / `emit.isDone` (Bloc streams)?
+5. Async guarded — Riverpod (`AsyncValue.guard` / `if (!ref.mounted)`) / `isClosed` (Cubit) / `emit.isDone` (Bloc streams)?
 6. Loading and error states rendered, not just the data state?

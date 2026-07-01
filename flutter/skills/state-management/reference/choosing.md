@@ -9,6 +9,7 @@ Pick by the shape of the problem, then **commit to one solution** — never run 
 | **Riverpod** | Compile-safe DI + reactive derived state, async caching/cancellation, codegen `@riverpod`. Default for new apps. | Codegen + build_runner step; concepts (providers, refs) to learn. |
 | **Bloc** | Event-driven flows, explicit traceable transitions, event logging, debounce/concurrency transformers. | More boilerplate (events + handlers). |
 | **Cubit** | Simple imperative state: toggles, counters, form fields, simple auth — `emit()` directly. | No event log; promote to Bloc when you need one. |
+| **signals** | Fine-grained reactivity — auto-tracked `signal`/`computed`, minimal rebuilds, no codegen (`signals` core + `signals_flutter` binding). | Smaller ecosystem; unopinionated about app architecture/DI. |
 | **provider** | Plain `InheritedWidget`-style DI / `ChangeNotifier`; lightweight existing apps. | Manual `notifyListeners`; easy to over-rebuild. |
 | **get_it** | Pure service locator / DI, no reactivity. | Not a state container; pair with one of the above. |
 | **setState** | Purely-local, ephemeral UI: a toggle in one widget, `AnimationController`, scroll offset. | No sharing, no caching, no testable transitions. |
@@ -51,7 +52,7 @@ class CartIcon extends ConsumerWidget {
   const CartIcon({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final count = ref.watch(cartProvider.select((s) => s.valueOrNull?.length ?? 0));
+    final count = ref.watch(cartProvider.select((s) => s.value?.length ?? 0));
     return Badge(label: Text('$count'), child: const Icon(Icons.shopping_cart));
   }
 }

@@ -29,7 +29,7 @@ Do this ONLY when adding/upgrading a package, when the user asks for the latest,
 | flutter_bloc | pub.dev/packages/flutter_bloc | pub.dev/packages/flutter_bloc/changelog |
 | bloc_test | pub.dev/packages/bloc_test | pub.dev/packages/bloc_test/changelog |
 
-**Baseline (verified 2026-06-24):** flutter_riverpod/riverpod_annotation `3.3.1`; flutter_bloc `9.1.1`; provider `6.1.5+1`; get_it `9.2.1`. Full table + protocol: `reference/versions.md`. **If offline/no web: use the baseline and state the assumed version.** Prefer `flutter pub add <pkg>` over hardcoding.
+**Baseline (verified 2026-06-30):** flutter_riverpod/riverpod `3.3.2` but riverpod_annotation `4.0.3` (the version lines **differ** — don't "align" them); flutter_bloc `9.1.1`, bloc_test `10.0.0`; provider `6.1.5+1`; get_it `9.2.1`. Full table + protocol: `reference/versions.md`. **If offline/no web: use the baseline and state the assumed version.** Prefer `flutter pub add <pkg>` over hardcoding.
 
 ## Choose: Riverpod vs Bloc
 
@@ -58,10 +58,10 @@ The #1 bug: **data changes but the UI doesn't.** Flutter rebuilds only when the 
   ```
   Same for `Map`/`Set`: `{...old, k: v}`, `{...old, x}`.
 - **Value equality with ALL fields.** Equatable `props` / freezed constructor must list every field — omit one and a real change compares equal and is invisible.
-- **Riverpod:** `state = AsyncData(...)` / `state = await AsyncValue.guard(...)`; `ref.watch` in `build` (not `ref.read`); `ref.watch(p.select((s) => s.field))` for slice rebuilds; guard `autoDispose` providers across `await`.
+- **Riverpod:** `state = AsyncData(...)` / `state = await AsyncValue.guard(...)`; `ref.watch` in `build` (not `ref.read`); `ref.watch(p.select((s) => s.field))` for slice rebuilds; guard raw writes across `await` with `if (!ref.mounted) return;` (notifiers are recreated on rebuild).
 - **Bloc:** `emit(NewState())`; async guard `if (isClosed) return;` (Cubit) / `if (emit.isDone) break;` (Bloc streams); side effects (nav/snackbars/dialogs) in `BlocListener`, never in `BlocBuilder`.
 
-**Verify state→UI checklist:** (1) NEW instance assigned/emitted, not a mutated field? (2) NEW collection, not `.add`/`.remove` on the reused list? (3) `props`/freezed fields cover ALL fields? (4) UI watches in `build` (`ref.watch` / `BlocBuilder`), not `read`? (5) async guarded (autoDispose / `isClosed` / `emit.isDone`)? (6) loading + error states rendered, not just data? Full do/avoid: `reference/state-updates.md`.
+**Verify state→UI checklist:** (1) NEW instance assigned/emitted, not a mutated field? (2) NEW collection, not `.add`/`.remove` on the reused list? (3) `props`/freezed fields cover ALL fields? (4) UI watches in `build` (`ref.watch` / `BlocBuilder`), not `read`? (5) async guarded (`ref.mounted` / `isClosed` / `emit.isDone`)? (6) loading + error states rendered, not just data? Full do/avoid: `reference/state-updates.md`.
 
 ## Riverpod essentials
 Wrap the app in `ProviderScope`; run `dart run build_runner watch -d`. Each `@riverpod` file needs `part 'file.g.dart';`. Annotate a **function** for read-only/derived values + DI, a **class** for state you mutate.
@@ -78,7 +78,7 @@ class Counter extends _$Counter {
 }
 ```
 
-Read with `ref.watch(counterProvider)`; mutate via `ref.read(counterProvider.notifier).increment()`. `Future build()` → `AsyncNotifier` exposing `AsyncValue<T>` (render `.when(data/loading/error)`). Providers are `autoDispose`; clean up with `ref.onDispose`. Avoid legacy `StateProvider`/`StateNotifierProvider`/`ChangeNotifierProvider`. Full detail: `reference/riverpod.md`, `reference/riverpod-async.md`.
+Read with `ref.watch(counterProvider)`; mutate via `ref.read(counterProvider.notifier).increment()`. `Future build()` → `AsyncNotifier` exposing `AsyncValue<T>` — render with `.when(data/loading/error)` or an exhaustive `switch` (`AsyncValue` is `sealed`: `AsyncData`/`AsyncError`/`AsyncLoading`); read the value with `.value` (`.valueOrNull` was removed). Providers are `autoDispose`; clean up with `ref.onDispose`; a failed `build` **auto-retries** with exponential backoff. Avoid legacy `StateProvider`/`StateNotifierProvider`/`ChangeNotifierProvider` — if you must use them, import `package:flutter_riverpod/legacy.dart`. Opt-in offline persistence (experimental) via `riverpod_sqflite`. Full detail: `reference/riverpod.md`, `reference/riverpod-async.md`.
 
 ## Bloc essentials
 **Cubit** is imperative (`emit()` directly); **Bloc** is event-driven (`add(event)` → `on<Event>`). Model states with Dart 3 sealed classes + Equatable for exhaustive `switch` and value equality.

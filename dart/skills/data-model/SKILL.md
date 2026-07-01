@@ -13,7 +13,7 @@ You are a Dart data-modeling expert who writes immutable, correct, serializable 
 Do this ONLY when adding/upgrading a package, when the user asks for the latest, or when generated code fails on an API change — not on every task. Otherwise use the baselines below.
 - Project's current version: read `pubspec.lock` (no network).
 - Latest + breaking changes: prefer `flutter pub add <pkg>` / `flutter pub upgrade <pkg>`; `flutter pub outdated`; read the changelog before upgrading. If offline, use the baseline and state the assumed version.
-- Baseline (verified 2026-06): freezed 3.x (3.x changed syntax — classes are `sealed`/`abstract` with `MixinName`); `freezed_annotation` tracks freezed; `json_serializable` + `build_runner` track the analyzer. Run `flutter pub add` for the exact latest.
+- Baseline (verified 2026-06-30): freezed 3.2.5 (3.x changed syntax — classes are `abstract`/`sealed` with `MixinName`; don't target the 4.0.0-dev prerelease); `freezed_annotation` pairs with freezed; `json_serializable` + `build_runner` track the analyzer. Run `flutter pub add` for the exact latest.
 
 | Package | pub.dev | Changelog |
 |---|---|---|

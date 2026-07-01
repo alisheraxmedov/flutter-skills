@@ -11,7 +11,7 @@ part 'user.freezed.dart';
 part 'user.g.dart';
 
 @freezed
-sealed class User with _$User {
+abstract class User with _$User {
   const factory User({
     required String id,
     required String name,
@@ -23,6 +23,7 @@ sealed class User with _$User {
 }
 ```
 
+- In freezed 3, a single-variant data class is declared `abstract class`; a multi-variant union is `sealed class` (see below). The old plain `@freezed class X with _$X` form is gone.
 - Generated `copyWith` distinguishes "absent" from "explicit null", so it **can** clear a nullable field — unlike hand-written `x ?? this.x`.
 
 ## Union / variant types
@@ -44,10 +45,14 @@ String describe(AuthState s) => switch (s) {
 };
 ```
 
+The generated `map`/`when` (and `maybeMap`/`whenOrNull`) helpers are **deprecated** in freezed 3 — use Dart 3 `switch`/pattern matching over the sealed subclasses, as above.
+
 ## Running the generator
 
 ```bash
 dart run build_runner build --delete-conflicting-outputs
+# or, while iterating:
+dart run build_runner watch --delete-conflicting-outputs
 ```
 
 ## pubspec.yaml
@@ -59,7 +64,7 @@ dependencies:
 
 dev_dependencies:
   build_runner: ^2.4.0
-  freezed: ^3.0.0
+  freezed: ^3.2.5
   json_serializable: ^6.8.0
 ```
 

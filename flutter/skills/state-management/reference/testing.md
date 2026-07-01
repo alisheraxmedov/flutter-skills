@@ -6,7 +6,7 @@
 
 ## ProviderContainer + overrides (unit tests)
 
-Build a `ProviderContainer`, override dependencies with fakes, and always `addTearDown(container.dispose)`.
+Build a `ProviderContainer`, override dependencies with fakes, and always `addTearDown(container.dispose)`. In Riverpod 3 prefer the `ProviderContainer.test()` helper — it auto-disposes at the end of the test, so you can skip the manual `addTearDown`. (Full testing patterns live in `flutter:test`; this is just the state-management slice.)
 
 ```dart
 test('loads todos', () async {

@@ -11,6 +11,8 @@ dev_dependencies: { bloc_test: ^10.0.0 }
 
 Prefer `flutter pub add flutter_bloc equatable` (+ `dev:bloc_test`) for the latest compatible versions.
 
+For state that must survive app restarts, use **`hydrated_bloc`** — `HydratedCubit`/`HydratedBloc` persist state automatically via generated `toJson`/`fromJson` (set up `HydratedBloc.storage` in `main`).
+
 ## Cubit vs Bloc
 
 | | Cubit | Bloc |

@@ -21,14 +21,14 @@ class TodoList extends _$TodoList {
   }
 
   Future<void> remove(String id) async {
-    final current = state.valueOrNull ?? [];
+    final current = state.value ?? [];
     state = AsyncData(current.where((t) => t.id != id).toList()); // NEW list
     final result = await AsyncValue.guard(() => _repo.delete(id));
     if (result.hasError) state = AsyncData(current); // rollback
   }
 
   Future<void> toggle(String id) async {
-    final current = state.valueOrNull ?? [];
+    final current = state.value ?? [];
     // optimistic update — build a NEW list with a NEW item instance
     state = AsyncData([
       for (final t in current)
@@ -45,6 +45,7 @@ Key points:
 - **Set `AsyncLoading` first** when the whole list is being replaced; skip it for optimistic in-place edits (the UI stays responsive).
 - **Always build a NEW list** (`.where(...).toList()`, spread, or collection-for) — never `current.add(x)` then reuse `current`.
 - **Rollback** by reassigning the captured `current` on error.
+- **Read the value with `.value`** — `.valueOrNull` was removed in Riverpod 3; `.value` returns `null` while loading **or** on error (it no longer throws).
 
 ## Preserve previous data during reload
 
@@ -71,3 +72,8 @@ state = await AsyncValue.guard(
   (error) => error is! AuthException, // rethrow auth errors to a global handler
 );
 ```
+
+## Riverpod 3 niceties
+
+- **Automatic retry on failed init:** a provider whose `build` throws is retried automatically with exponential backoff (≈200ms, doubling up to ≈6.4s). Configure or disable it per-provider or on `ProviderScope`.
+- **Offline persistence (experimental, opt-in):** persist a `Notifier`/`AsyncNotifier` to disk with `riverpod_sqflite` so it survives restarts. Still experimental — gate it behind a flag.

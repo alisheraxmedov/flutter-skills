@@ -20,7 +20,7 @@ packages:
   flutter_riverpod:
     dependency: "direct main"
     source: hosted
-    version: "3.3.1"     # <- this is what the project actually runs
+    version: "3.3.2"     # <- this is what the project actually runs
 ```
 
 Use this for "what is this project on". `pubspec.yaml` only shows the constraint (e.g. `^3.3.1`), not the resolved version — prefer `pubspec.lock` for the real answer.
@@ -55,13 +55,14 @@ Web (when tooling isn't available or you want to read changes first):
 | provider | InheritedWidget DI | pub.dev/packages/provider | pub.dev/packages/provider/changelog |
 | get_it | Service locator / DI | pub.dev/packages/get_it | pub.dev/packages/get_it/changelog |
 
-## Baseline versions (verified 2026-06-24)
+## Baseline versions (verified 2026-06-30)
 
 | Package | Version | Notes |
 |---|---|---|
-| flutter_riverpod | 3.3.1 | Riverpod 3: codegen `@riverpod`, `Notifier`/`AsyncNotifier`. `StateProvider`/`StateNotifierProvider`/`ChangeNotifierProvider` are legacy — avoid. |
-| riverpod_annotation | 3.3.1 | Pair with `riverpod_generator` + `build_runner`. |
+| flutter_riverpod | 3.3.2 | Riverpod 3: codegen `@riverpod`, `Notifier`/`AsyncNotifier`. Legacy `StateProvider`/`StateNotifierProvider`/`ChangeNotifierProvider` moved to `package:flutter_riverpod/legacy.dart` — avoid. |
+| riverpod_annotation | 4.0.3 | Version line **differs** from `flutter_riverpod` (3.3.2) — don't "align" them. Pair with `riverpod_generator` + `build_runner`. |
 | flutter_bloc | 9.1.1 | Cubit + Bloc. Pair with `bloc_test`, `equatable` (or freezed) for states. |
+| bloc_test | 10.0.0 | Testing blocs/cubits. |
 | provider | 6.1.5+1 | Lightweight DI / `ChangeNotifier`. |
 | get_it | 9.2.1 | Service locator / DI. |
 
