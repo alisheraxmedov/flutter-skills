@@ -97,4 +97,6 @@ When this skill is active, keep responses tight and scannable:
 - Full naming + style examples (null-aware, expression bodies, extensions, doc comments, collection literals): read `reference/naming-and-style.md`.
 - `var`/`final`/`const`/`late`/`required` worked examples incl. pitfalls (copyWith-can't-null): read `reference/declarations.md`.
 - Sealed classes, pattern matching, records, class modifiers — full examples: read `reference/patterns.md`.
+- Extension methods (static dispatch footgun), mixins (linearization order), callable classes, custom operators: read `reference/extensions-and-mixins.md`.
+- Collections & iterables (laziness re-evaluation), generics & variance (`covariant`, bounded type params): read `reference/collections-and-generics.md`.
 - Anti-patterns with do/avoid examples (bang, copy-paste, magic values, dead code, god class, `late`, `dynamic`, spaghetti): read `reference/anti-patterns.md`.
