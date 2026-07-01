@@ -19,6 +19,21 @@ await tester.pumpWidget(
 
 Stub the mock's methods with `mocktail` exactly as in unit tests, then drive the widget and assert on the rendered result.
 
+## Riverpod 3: ProviderContainer.test() for headless tests
+
+To test providers/notifiers without pumping a widget, use **`ProviderContainer.test()`** (Riverpod 3) — it returns a container that is **auto-disposed at test end**, so you don't need `addTearDown(container.dispose)`.
+
+```dart
+test('userProvider exposes the signed-in user', () async {
+  final container = ProviderContainer.test(
+    overrides: [authRepositoryProvider.overrideWithValue(MockAuthRepository())],
+  );
+  expect(container.read(userProvider), const AsyncValue<User>.loading());
+});
+```
+
+In a widget test, reach the bound container with **`WidgetTester.container`** (e.g. `tester.container(find.byType(SignInPage))`) to `read`/`listen` to providers mid-test without re-wrapping the tree.
+
 ## Bloc: mock the bloc or unit-test it with bloc_test
 
 Provide a mock bloc to the widget tree:

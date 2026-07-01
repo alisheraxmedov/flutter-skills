@@ -24,7 +24,7 @@ Run with `flutter test integration_test`.
 
 ## When to reach for patrol
 
-For advanced E2E (native dialogs, OS permission prompts, deep links, notifications), use **`patrol`**, which extends `integration_test` with native automation. It can tap native UI outside the Flutter view (e.g. an Android permission dialog) that `integration_test` alone cannot reach.
+For advanced E2E (native dialogs, OS permission prompts, deep links, notifications), use **`patrol`** (4.6.1), which extends `integration_test` with native automation. It can tap native UI outside the Flutter view (e.g. an Android permission dialog) that `integration_test` alone cannot reach.
 
 ```dart
 patrolTest('grants location and continues', ($) async {

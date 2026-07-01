@@ -2,7 +2,7 @@
 
 ## Unit tests with mocktail
 
-`mocktail` needs no codegen. Mock the dependency, stub it, exercise the unit, verify.
+`mocktail` needs no codegen — **prefer it over `mockito`** (5.7.0), which requires `build_runner` + `@GenerateMocks`. Mock the dependency, stub it, exercise the unit, verify.
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';

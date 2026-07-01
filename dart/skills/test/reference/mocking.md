@@ -1,6 +1,6 @@
 # Mocking with mocktail
 
-mocktail needs no build step. Subclass `Mock` and implement the contract.
+mocktail needs no build step — that's why it's **preferred over `mockito`** (5.7.0), which requires `build_runner` codegen via `@GenerateMocks`. Subclass `Mock` and implement the contract.
 
 ```dart
 class MockUserRepository extends Mock implements UserRepository {}

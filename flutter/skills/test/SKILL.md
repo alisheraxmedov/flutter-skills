@@ -13,17 +13,18 @@ You are a Flutter test engineer who builds a fast, reliable suite shaped like a 
 
 | Level | Share | Tools | Tests |
 |-------|-------|-------|-------|
-| Unit | ~70% | `flutter_test` + `mocktail` | Pure logic: use cases, repositories, ViewModels, mappers. Fast, no UI. |
-| Widget | ~20% | `WidgetTester` (`flutter_test`) | A widget subtree in isolation: rendering, taps, state changes. |
+| Unit | ~60% | `flutter_test` + `mocktail` | Pure logic: use cases, repositories, ViewModels, mappers. Fast, no UI. |
+| Widget | ~25% | `WidgetTester` (`flutter_test`) | A widget subtree in isolation: rendering, taps, state changes. |
 | Integration | ~10% | `integration_test` package | Whole flows on a real device/emulator. |
+| Native E2E | ~5% | `patrol` (extends `integration_test`) | Cross-process flows: native permission dialogs, deep links, notifications. |
 
 Plus **golden tests** (a widget-test flavor) for pixel-accurate visual regression.
 
 ## Key tools and rules
-- **`mocktail`** for mocks (no codegen); `registerFallbackValue` for custom arg types.
+- **`mocktail`** for mocks — **prefer it over `mockito`**: `mocktail` 1.0.5 is null-safe with **no codegen**, while `mockito` 5.7.0 needs `build_runner` + `@GenerateMocks`. Use `registerFallbackValue` for custom arg types.
 - **`WidgetTester`**: `pump()` advances one frame; `pumpAndSettle()` runs until idle. Never `pumpAndSettle()` an infinite animation — use `pump(duration)`.
 - Use **`Key`s** for stable finders in widget tests.
-- State: override providers via `ProviderScope` (**riverpod**); mock the bloc or use **`bloc_test`** (**bloc**).
+- State: override providers via `ProviderScope` (**riverpod**, or `ProviderContainer.test()` for headless tests); mock the bloc or use **`bloc_test`** (**bloc**).
 - **`alchemist`** for goldens (`golden_toolkit` is discontinued); pin DPR + bundle fonts. iOS-font goldens run on **macOS**.
 - **`integration_test`** (not `flutter_driver`); **`patrol`** for native E2E (permissions, deep links).
 
@@ -36,9 +37,10 @@ Plus **golden tests** (a widget-test flavor) for pixel-accurate visual regressio
 dev_dependencies:
   flutter_test: { sdk: flutter }
   integration_test: { sdk: flutter }
-  mocktail: ^1.0.0
-  bloc_test: ^9.1.0     # if using bloc
-  alchemist: ^0.12.0    # golden testing
+  mocktail: ^1.0.5
+  bloc_test: ^10.0.0    # if using bloc
+  alchemist: ^0.14.0    # golden testing
+  patrol: ^4.6.1        # native E2E (optional)
 ```
 
 ## Common mistakes

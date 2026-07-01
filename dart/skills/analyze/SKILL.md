@@ -21,6 +21,15 @@ dart format .                # canonical formatting; --set-exit-if-changed in CI
 dart analyze --fatal-infos   # fail CI on infos too (flutter analyze for Flutter)
 ```
 
+## Choosing a base ruleset
+Pick **one** base and layer overrides on top — never `include` two.
+
+| Base | Version | When |
+|------|---------|------|
+| `lints` (`package:lints/recommended.yaml`) | — | **Default for a pure-Dart package** — the official baseline. |
+| `flutter_lints` (`package:flutter_lints/flutter.yaml`) | 6.0.0 | Official curated set when the package *is* a Flutter package. |
+| `very_good_analysis` | 10.3.0 | Stricter opinionated superset (nearly every useful lint on) from Very Good Ventures — for maximum strictness out of the box. |
+
 ## High-value lint rules
 
 | Rule | Why it matters |

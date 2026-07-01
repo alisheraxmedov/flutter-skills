@@ -1,6 +1,6 @@
 # Strict analyzer configuration
 
-Create `analysis_options.yaml` at the project root (next to `pubspec.yaml`). Use `package:flutter_lints/flutter.yaml` for Flutter, or `package:lints/recommended.yaml` for pure Dart.
+Create `analysis_options.yaml` at the project root (next to `pubspec.yaml`). Use `package:lints/recommended.yaml` for pure Dart, or `package:flutter_lints/flutter.yaml` (6.0.0) for Flutter. For maximum strictness out of the box, swap the `include:` for `package:very_good_analysis/analysis_options.yaml` (10.3.0). Include **only one** base ruleset, then add overrides below it.
 
 ```yaml
 include: package:flutter_lints/flutter.yaml   # or package:lints/recommended.yaml

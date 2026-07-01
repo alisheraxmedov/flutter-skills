@@ -1,6 +1,6 @@
 # Golden (visual regression) tests
 
-Use **`alchemist`** — `golden_toolkit` is discontinued. Pin device pixel ratio and bundle fonts, or goldens flake across machines.
+Use **`alchemist`** (0.14.0, the current standard) — `golden_toolkit` is discontinued. Pin device pixel ratio and bundle fonts, or goldens flake across machines.
 
 ```dart
 goldenTest(

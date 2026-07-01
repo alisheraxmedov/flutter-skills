@@ -15,6 +15,15 @@ You are a Flutter quality engineer who enforces correctness and consistency thro
 - **Promote correctness rules to `error`** so they break CI (see table). Demote noise (`invalid_annotation_target: ignore`).
 - **Exclude generated files:** `*.g.dart`, `*.freezed.dart`, `*.gr.dart`, `*.mocks.dart`, `*.config.dart`, l10n, `build/`.
 
+## Choosing a base ruleset
+Pick **one** base and layer your overrides on top — never `include` two rulesets.
+
+| Base | Version | When |
+|------|---------|------|
+| `flutter_lints` (`package:flutter_lints/flutter.yaml`) | 6.0.0 | **Default.** Official, curated, lenient — few rules, low friction for most apps. |
+| `very_good_analysis` | 10.3.0 | Stricter opinionated superset (nearly every useful lint on) from Very Good Ventures — pick when the team wants maximum strictness out of the box. |
+| `lints` (`package:lints/recommended.yaml`) | — | Official baseline for a **pure-Dart** package (no Flutter deps). |
+
 ## Highest-value rules
 
 | Rule | Why |
@@ -51,7 +60,7 @@ Future<void> save() async {
 ## Gotchas
 - **Exclude generated files** (`*.g.dart`, `*.freezed.dart`, `*.gr.dart`, `*.mocks.dart`) from `analyzer.exclude` — otherwise codegen noise drowns real warnings and breaks CI.
 - **`use_build_context_synchronously` catches async-gap bugs** — set it to `error`; it's the #1 "deactivated widget" crash and review alone won't catch it.
-- **Base on `flutter_lints` (or `lints` for pure Dart)** — don't hand-roll a rule list from scratch; include the package and add overrides on top.
+- **Base on one ruleset** — `flutter_lints` (lenient default), `very_good_analysis` (strict superset), or `lints` (pure Dart). Don't hand-roll a list from scratch and don't stack two; include one and add overrides on top.
 
 ## Output contract
 When this skill is active, keep responses tight and scannable:

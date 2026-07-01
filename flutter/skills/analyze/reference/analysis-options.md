@@ -4,6 +4,8 @@
 
 Place this at the project root. It builds on `flutter_lints`, turns on strict type checks, promotes high-value rules to **errors** (so they fail CI), and excludes generated files.
 
+> **Base ruleset:** `flutter_lints` 6.0.0 is the lenient official default. For maximum strictness out of the box, swap the `include:` for `package:very_good_analysis/analysis_options.yaml` (10.3.0); for a pure-Dart package use `package:lints/recommended.yaml`. Include **only one** base, then add overrides below it.
+
 ```yaml
 include: package:flutter_lints/flutter.yaml
 
